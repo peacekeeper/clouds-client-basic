@@ -300,9 +300,11 @@ public class PersonalCloud {
 		// prepare message envelope for getting phone
 
 		MessageEnvelope messageEnvelope2 = new MessageEnvelope();
-		Message message2 = messageEnvelope2.getMessage(cloudNumber, true);
+		Message message2 = messageEnvelope2.getMessage(senderCloudNumber, true);
 		message2.setLinkContractXri(linkContractAddress);
-		message2.setSecretToken(secretToken);
+		if (secretToken != null) {
+			message2.setSecretToken(secretToken);
+		}
 		message2.setToAddress(XDI3Segment.create(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
@@ -514,10 +516,6 @@ public class PersonalCloud {
 		PersonalCloud pc1 = PersonalCloud.open(
 				XDI3Segment.create("=dev.animesh"), "animesh123",
 				PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
-		
-		
-
-
 		ProfileInfo pc1Prof = new ProfileInfo();
 		pc1Prof.setEmail("animesh.chowdhury@neustar.biz");
 		pc1Prof.setPhone("1-240-620-4205");
