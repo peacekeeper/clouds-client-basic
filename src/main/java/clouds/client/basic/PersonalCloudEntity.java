@@ -1,5 +1,7 @@
 package clouds.client.basic;
 
-public interface PersonalCloudEntity {
+import xdi2.core.xri3.XDI3Segment;
 
+public interface PersonalCloudEntity {
+public XDI3Segment getAddress(PersonalCloud pc);
 }

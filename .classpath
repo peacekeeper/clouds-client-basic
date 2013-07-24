@@ -12,7 +12,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_06">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -22,5 +22,9 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/xdi2"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xdi2-client"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xdi2-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/xdi2-messaging"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

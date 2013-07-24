@@ -11,6 +11,11 @@ public class ContactInfo implements PersonalCloudEntity {
 	private String email;
 	private String phone;
 
+	public XDI3Segment getAddress(PersonalCloud pc) {
+		
+		return cloudNumber; 
+	}
+
 	public String getId() {
 
 		return this.id;

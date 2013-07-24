@@ -11,7 +11,7 @@ public class Test {
 
 		// open my own personal cloud
 
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create("=markus"), "s3cr3t", null);
+		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create("=markus"), "s3cr3t", null,"");
 
 		// store my profile info
 
@@ -38,7 +38,7 @@ public class Test {
 
 		// open someone else's personal cloud
 
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create("=animesh"), null);
+		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create("=animesh"), null,"");
 
 		// get profile info
 

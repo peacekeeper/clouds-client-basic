@@ -1,10 +1,19 @@
 package clouds.client.basic;
 
+import xdi2.core.xri3.XDI3Segment;
+
 public class ProfileInfo implements PersonalCloudEntity {
 
 	private String email;
 	private String phone;
+	
+	public XDI3Segment getAddress(PersonalCloud pc) {
+		
+		return pc.getCloudNumber(); 
+	}
 
+	//public ValueObject zip;
+	
 	public String getEmail() {
 
 		return this.email;
