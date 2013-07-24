@@ -36,12 +36,12 @@ public class Test {
 
 	public static void testOnOtherPersonalCloudWithDiscovery() {
 
-		// open someone else's personal cloud
-
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create("=animesh"), null,"");
-
-		// get profile info
-
-		ProfileInfo profileInfoAnimesh = cloud.getProfileInfo();
+//		// open someone else's personal cloud
+//
+//		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create("=animesh"), null,"");
+//
+//		// get profile info
+//
+//		ProfileInfo profileInfoAnimesh = cloud.getProfileInfo();
 	}
 }
