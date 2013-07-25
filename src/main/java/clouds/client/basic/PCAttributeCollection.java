@@ -9,7 +9,7 @@ public class PCAttributeCollection implements PersonalCloudEntity {
 	String name = null;
 	Hashtable<String , PCAttribute> attributes = new Hashtable<String , PCAttribute>();
 	
-	PCAttributeCollection(String name){
+	public PCAttributeCollection(String name){
 		this.name = name;
 	}
 	public void setAttribute(PCAttribute attr){
@@ -25,7 +25,7 @@ public class PCAttributeCollection implements PersonalCloudEntity {
 	}
 	@Override
 	public XDI3Segment getAddress(PersonalCloud pc) {
-		return XDI3Segment.create( pc.getCloudNumber().toString() + "+" + name);
+		return XDI3Segment.create( pc.getCloudNumber().toString() + "+" + name.replace('.', '+'));
 	}
 
 	public Hashtable<String , PCAttribute> getAttributeMap(){

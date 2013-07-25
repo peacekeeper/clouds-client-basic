@@ -12,8 +12,6 @@ import xdi2.client.exceptions.Xdi2ClientException;
 import xdi2.client.http.XDIHttpClient;
 import xdi2.core.Graph;
 import xdi2.core.Literal;
-import xdi2.core.constants.XDIConstants;
-import xdi2.core.constants.XDILinkContractConstants;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
 import xdi2.core.impl.memory.MemoryGraph;
 import xdi2.core.io.XDIWriterRegistry;
@@ -695,7 +693,7 @@ public class PersonalCloud {
 
 		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
 
-		// prepare message envelope for getting email
+		// prepare message envelope for deleting the link contract for the assignee
 
 		MessageEnvelope messageEnvelope = new MessageEnvelope();
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
@@ -704,9 +702,9 @@ public class PersonalCloud {
 		message.setToAddress(XDI3Segment.create(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
-		message.createDelOperation(XDI3Statement.create(assigneeCN.toString()
-				+ "$do$if$and/$true/({$from}/$is/" + assigneeCN.toString()
-				+ ")"));
+//		message.createDelOperation(XDI3Statement.create(assigneeCN.toString()
+//				+ "$do$if$and/$true/({$from}/$is/" + assigneeCN.toString()
+//				+ ")"));
 		message.createDelOperation(XDI3Segment.create(assigneeCN.toString()
 				+ "$do"));
 
@@ -757,63 +755,5 @@ public class PersonalCloud {
 		return cloudEndpointURI;
 	}
 
-	public static void main(String args[]) {
-		// PersonalCloud pc1 = PersonalCloud.open(
-		// XDI3Segment.create("=dev.animesh"), "animesh123",
-		// PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
-		PersonalCloud pc1 = PersonalCloud.open(XDI3Segment.create("=markus"),
-				"markus", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
-
-		// ProfileInfo pc1Prof = new ProfileInfo();
-		// pc1Prof.setEmail("animesh.chowdhury@neustar.biz");
-		// pc1Prof.setPhone("1-240-620-4205");
-		//
-		// pc1.saveProfileInfo(pc1Prof);
-		// pc1.allowAccess(pc1Prof, XDI3Segment.create("$get"),
-		// XDI3Segment.create("=markus"));
-		// Graph pc1Graph = pc1.getWholeGraph();
-		// pc1.removeAccess( pc1Prof,XDI3Segment.create("=markus"));
-		// pc1Graph = pc1.getWholeGraph();
-		//
-		//
-		// // PersonalCloud pc2 =
-		// PersonalCloud.open(XDI3Segment.create("=markus"),
-		// // XDI3Segment.create("$public$do"), "");
-		//
-		// PersonalCloud pc_markus = PersonalCloud.open(
-		// XDI3Segment.create("=markus"),pc1.getCloudNumber(),
-		// XDI3Segment.create(pc1.getCloudNumber().toString() +"$do"), "");
-		PersonalCloud pc_animesh = PersonalCloud
-				.open(XDI3Segment.create("=dev.animesh"),
-						pc1.getCloudNumber(),
-						XDI3Segment.create(pc1.getCloudNumber().toString()
-								+ "$do"), "");
-		//
-		// System.out.println("Markus's phone:" +
-		// pc_markus.getProfileInfo().getPhone());
-		//
-		// PCAttributeCollection todoList = new PCAttributeCollection("TODO");
-		// PCAttribute task1 = new PCAttribute("Task1",
-		// "Find out meaning of life", todoList);
-		// PCAttribute task2 = new PCAttribute("Task2",
-		// "Tell everyone that you've found out the meaning of life", todoList);
-		// pc1.save(todoList);
-		//
-		PCAttributeCollection todoListR = new PCAttributeCollection("TODO");
-		PCAttribute tsk1 = pc_animesh.readAttr(todoListR, "Task1");
-		System.out.println("Task1 : " + tsk1.getValue());
-
-		// pc1.allowAccess(todoList, XDILinkContractConstants.XRI_S_GET,
-		// XDI3Segment.create("=markus"));
-
-		// ContactInfo ci1 = new ContactInfo();
-		// ci1.setCloudName(XDI3Segment.create("=markus"));
-		// ci1.setEmail("markus.sabadello.@gmail.com");
-		//
-		// pc1.saveContactInfo(XDI3Segment.create("=markus"), ci1);
-
-		// pc1.allowAccess(entity, permissionXris, assignees)
-		// System.out.println(pc2);
-
-	}
+	
 }

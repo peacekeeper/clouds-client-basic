@@ -8,12 +8,12 @@ public class PCAttribute implements PersonalCloudEntity {
 	String value = null;	
 	PCAttributeCollection container = null;
 	
-	PCAttribute(String name , PCAttributeCollection container){
+	public PCAttribute(String name , PCAttributeCollection container){
 		this.name = name;
 		this.container = container;
 		this.container.setAttribute(this);
 	}
-	PCAttribute(String name , String value , PCAttributeCollection container){
+	public PCAttribute(String name , String value , PCAttributeCollection container){
 		this.name = name;
 		this.value = value;
 		this.container = container;
@@ -21,7 +21,7 @@ public class PCAttribute implements PersonalCloudEntity {
 	}
 	@Override
 	public XDI3Segment getAddress(PersonalCloud pc) {
-		return XDI3Segment.create( pc.getCloudNumber().toString() + "+" + container.getName() + "<+" + name + ">&");
+		return XDI3Segment.create( container.getAddress(pc) + "<+" + name + ">&");
 	}
 	public String getValue() {
 		return value;
