@@ -31,6 +31,8 @@ public class PersonalCloud {
 	public static String DEFAULT_REGISTRY_URI = "http://mycloud.neustar.biz:12220/";
 	private String secretToken = null;
 	private XDI3Segment linkContractAddress = null;
+	
+
 	private XDI3Segment cloudNumber = null;
 	private XDI3Segment senderCloudNumber = null;
 	private String registryURI = null;
@@ -612,6 +614,9 @@ public class PersonalCloud {
 	public ContactInfo findContactInfoByEmail(String email) {
 
 		return null;
+	}
+	public void setLinkContractAddress(XDI3Segment linkContractAddress) {
+		this.linkContractAddress = linkContractAddress;
 	}
 
 	/*

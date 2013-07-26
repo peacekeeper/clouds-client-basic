@@ -85,18 +85,17 @@ public class Test {
 				ProfileInfo pc1Prof = new ProfileInfo();
 				 pc1Prof.setEmail("animesh.chowdhury@neustar.biz");
 				 pc1Prof.setPhone("1-240-620-4205");
-				//
 				 pc1.saveProfileInfo(pc1Prof);
 				pc1.allowAccess(pc1Prof, XDILinkContractConstants.XRI_S_GET,
 				XDI3Segment.create("=markus"));
 				Graph pc1Graph = pc1.getWholeGraph();
 				
 				// open someone else's personal cloud
-				 PersonalCloud pc_markus = PersonalCloud.open(
-				 XDI3Segment.create("=markus"),pc1.getCloudNumber(),
-				 XDI3Segment.create(pc1.getCloudNumber().toString() +"$do"), "");				
-				
-				System.out.println(pc_markus.getProfileInfo().getPhone());
+//				 PersonalCloud pc_markus = PersonalCloud.open(
+//				 XDI3Segment.create("=markus"),pc1.getCloudNumber(),
+//				 XDI3Segment.create(pc1.getCloudNumber().toString() +"$do"), "");				
+//				
+//				System.out.println(pc_markus.getProfileInfo().getPhone());
 
 
 				// pc1.allowAccess(todoList, XDILinkContractConstants.XRI_S_GET,
@@ -115,9 +114,23 @@ public class Test {
 				 Graph pc1Graph = pc1.getWholeGraph();		
 		
 	}
+	public static void testSharedDataAccess() {
+		PersonalCloud pc1 = PersonalCloud.open(
+				 XDI3Segment.create("=markus"), "markus",
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+		PersonalCloud pc2 = PersonalCloud.open(
+				 XDI3Segment.create("=dev.animesh"), pc1.getCloudNumber(),
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+		String linkContract = pc1.getCloudNumber().toString() + "$do";
+		pc2.setLinkContractAddress(XDI3Segment.create(linkContract));
+		System.out.println("Shared PC's phone:" + pc2.getProfileInfo().getPhone());
+		
+	}
 	public static void main(String args[]) {
 		 
-		Test.testAccessGranting();
+		//Test.testAccessGranting();
+		//Test.testSharedDataAccess();
 		Test.testAccessRemoval();
+		Test.testSharedDataAccess();
 	}
 }
