@@ -10,15 +10,19 @@ import java.util.Iterator;
 import xdi2.client.XDIClient;
 import xdi2.client.exceptions.Xdi2ClientException;
 import xdi2.client.http.XDIHttpClient;
+import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.Literal;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
 import xdi2.core.impl.memory.MemoryGraph;
 import xdi2.core.io.XDIWriterRegistry;
+import xdi2.core.util.iterators.ReadOnlyIterator;
 import xdi2.core.xri3.XDI3Segment;
 import xdi2.core.xri3.XDI3Statement;
+import xdi2.core.xri3.XDI3SubSegment;
 import xdi2.discovery.XDIDiscovery;
 import xdi2.discovery.XDIDiscoveryResult;
+import xdi2.messaging.GetOperation;
 import xdi2.messaging.Message;
 import xdi2.messaging.MessageEnvelope;
 import xdi2.messaging.MessageResult;
@@ -189,6 +193,19 @@ public class PersonalCloud {
 
 	}
 
+	public ArrayList<PCAttributeCollection> geAllCollections(){
+		
+		Graph g = this.getWholeGraph();
+		ContextNode root = g.getRootContextNode();
+		ReadOnlyIterator<Literal> allLiterals = root.getAllLiterals();
+		while(allLiterals.hasNext()){
+			Literal lit = allLiterals.next();
+			String value = lit.getLiteralData();
+			String name = lit.getContextNode().toString();
+		}
+		return null;
+		
+	}
 	/**
 	 * 
 	 * @param profileInfo
@@ -357,6 +374,108 @@ public class PersonalCloud {
 		return profileInfo;
 	}
 
+	public MessageResult setXDIStmts(ArrayList<XDI3Statement> XDIStmts){
+		
+		// prepare XDI client
+
+		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
+
+		// prepare message envelope
+
+		MessageEnvelope messageEnvelope = new MessageEnvelope();
+		Message message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+
+		message.setSecretToken(secretToken);
+
+		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+		message.createSetOperation(XDIStmts.iterator());
+
+		//System.out.println("Message :\n" + messageEnvelope + "\n");
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// send the message
+
+		MessageResult messageResult = null;
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			//System.out.println(messageResult);
+			try {
+				XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+						messageResult.getGraph(), System.out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+		}
+		return messageResult;
+	}
+	public MessageResult getXDIStmts(XDI3Segment query , boolean isDeref){
+		
+		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
+
+		// prepare message envelope
+
+		MessageEnvelope messageEnvelope = new MessageEnvelope();
+		Message message = messageEnvelope.getMessage(senderCloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+		if (secretToken != null) {
+			message.setSecretToken(secretToken);
+		}
+		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+
+		GetOperation getOp = message.createGetOperation(query);
+		if(isDeref){
+		getOp.setParameter(XDI3SubSegment.create("$deref"), "true");
+		}
+		// System.out.println("Message :\n" + messageEnvelope + "\n");
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// send the message
+
+		MessageResult messageResult = null;
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
+					System.out);
+			
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+		}
+		return messageResult;
+	}
 	/*
 	 * contact info
 	 */
