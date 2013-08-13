@@ -32,13 +32,13 @@ public class PDSXEntity implements PersonalCloudEntity {
 		// TODO Auto-generated method stub
 		PDSXEntity entity = PDSXEntity.get(pc, objectType, objectName);
 		if ((objectUUID == null || objectUUID.length() == 0 ) && ( entity == null)) {
-			objectUUID = UUID.randomUUID().toString();
+			objectUUID = "!:uuid:" + UUID.randomUUID().toString();
 		}
 		else if(entity != null) {
 			this.objectUUID = entity.objectUUID;
 		}
 		return XDI3Segment.create(pc.getCloudNumber().toString() + "[+"
-				+ objectType + "]" + "!:uuid:" + objectUUID);
+				+ objectType + "]" +  objectUUID);
 	}
 
 	public XDI3Segment getElementCountAddress(PersonalCloud pc) {
@@ -135,7 +135,7 @@ public class PDSXEntity implements PersonalCloudEntity {
 							+ "]" + "*" + oid + "<+" + template.getName()
 							+ ">&"));
 			String value = (literalValue == null) ? "" : literalValue
-					.getLiteralData();
+					.getLiteralData().toString();
 			PDSXElement element = new PDSXElement(entity, template, value);
 
 		}
@@ -168,7 +168,7 @@ public class PDSXEntity implements PersonalCloudEntity {
 							+ "]" + "#" + order + "<+" + template.getName()
 							+ ">&"));
 			String value = (literalValue == null) ? "" : literalValue
-					.getLiteralData();
+					.getLiteralData().toString();
 			PDSXElement element = new PDSXElement(entity, template, value);
 
 		}
