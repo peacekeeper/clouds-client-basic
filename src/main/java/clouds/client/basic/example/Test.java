@@ -195,22 +195,23 @@ public class Test {
 		PersonalCloud pc_markus = PersonalCloud.open(
 				 XDI3Segment.create("=markus"),pc_animesh.getCloudNumber(),
 				 XDI3Segment.create("$public$do"), "");
-		pc_animesh.createRelationship(pc_markus, XDI3Segment.create("+friend"),XDI3Segment.create("+friend"));
+		//pc_animesh.createRelationship(pc_markus, XDI3Segment.create("+friend"),XDI3Segment.create("+friend"));
 		
-		PDSXElementTemplate profileNameTemplate = new PDSXElementTemplate("myProfileName","Name", true, "text", "What is your name?");
-		PDSXElementTemplate profileEmailTemplate = new PDSXElementTemplate("myProfileEmail","Email", true, "text", "Your home email address");
-		PDSXEntity.addTemplate("Person",profileNameTemplate);
-		PDSXEntity.addTemplate("Person",profileEmailTemplate);
-		
-		
-		PDSXEntity trungContact = new PDSXEntity("Person", "Contact information for a person", "trung");	
-		
-		PDSXElement trungName = new PDSXElement(trungContact, profileNameTemplate, "Trung Tran");
-		PDSXElement trungEmail = new PDSXElement(trungContact, profileEmailTemplate, "trung.tran@neustar.biz");
-		trungContact.save(pc_animesh);
-		
-		PDSXEntity trung = PDSXEntity.get(pc_animesh, "Person", "trung");
-		pc_animesh.allowAccessToRelationship(XDI3Segment.create(pc_animesh.getCloudNumber().toString() + "<+email>"),XDI3Segment.create("$get"), XDI3Segment.create("+friend"),XDI3Segment.create("=markus"));
+//		PDSXElementTemplate profileNameTemplate = new PDSXElementTemplate("myProfileName","Name", true, "text", "What is your name?");
+//		PDSXElementTemplate profileEmailTemplate = new PDSXElementTemplate("myProfileEmail","Email", true, "text", "Your home email address");
+//		PDSXEntity.addTemplate("Person",profileNameTemplate);
+//		PDSXEntity.addTemplate("Person",profileEmailTemplate);
+//		
+//		
+//		PDSXEntity trungContact = new PDSXEntity("Person", "Contact information for a person", "trung");	
+//		
+//		PDSXElement trungName = new PDSXElement(trungContact, profileNameTemplate, "Trung Tran");
+//		PDSXElement trungEmail = new PDSXElement(trungContact, profileEmailTemplate, "trung.tran@neustar.biz");
+//		trungContact.save(pc_animesh);
+//		
+//		PDSXEntity trung = PDSXEntity.get(pc_animesh, "Person", "trung");
+		//pc_animesh.allowAccessToRelationship(XDI3Segment.create(pc_animesh.getCloudNumber().toString() + "<+email>&"),null,XDI3Segment.create("$get"), XDI3Segment.create("+friend"),XDI3Segment.create("+friend"),XDI3Segment.create("=markus"));
+		pc_animesh.allowAccessToRelationship(XDI3Segment.create("=animesh" + "<+personal_email>&"),XDI3Segment.create(pc_animesh.getCloudNumber().toString() + "<+email>&"),XDI3Segment.create("$get"), XDI3Segment.create("+friend"),XDI3Segment.create("+friend"),XDI3Segment.create("=markus"));
 		
 		pc_animesh.getWholeGraph();
 		PersonalCloud pc_markus2 = PersonalCloud.open(
@@ -221,7 +222,8 @@ public class Test {
 				 XDI3Segment.create("=dev.animesh3"),pc_markus2.getCloudNumber(),
 				 XDI3Segment.create("$public$do"), "");
 		//pc_animesh2.getPCEntity(XDI3Segment.create(pc_animesh2.getCloudNumber().toString() + "[+Person]*trung"), XDI3Segment.create(pc_animesh2.getCloudNumber().toString() + "+friend$do" ));
-		pc_animesh2.getPCEntity(XDI3Segment.create("[=]!:uuid:17864069-1ad0-8bfa-1786-40691ad08bfa<+email>"), XDI3Segment.create(pc_animesh2.getCloudNumber().toString() + "+friend$do" ));
+		//pc_markus.getPCEntity(XDI3Segment.create(pc_animesh2.getCloudNumber().toString() + "<+email>&"), XDI3Segment.create(pc_animesh2.getCloudNumber().toString() + "+friend$do" ),pc_animesh2);
+		pc_markus2.getPCEntity(XDI3Segment.create("=animesh" + "<+personal_email>&"), XDI3Segment.create(pc_animesh2.getCloudNumber().toString() + "+friend$do" ),pc_animesh2);
 		
 	}
 	public static void testDeleteNode(){
@@ -246,17 +248,29 @@ public class Test {
 	//Test.testMyOwnPersonalCloud("=dev.ako", "ga3169723");
 		//Test.testSaveProfile("=dev.ako", "ga3169723", "ako@kynetx.com", "1234567890");
 		//Test.testPDSXOps();
-		PersonalCloud pc1 = PersonalCloud.open(
-				 XDI3Segment.create("=dev.animesh3"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
-		ProfileInfo profileInfo = new ProfileInfo();
-		profileInfo.setEmail("animesh.chowdhury@gmail.com");
-		profileInfo.setPhone("703-724-7686");
-
-		pc1.saveProfileInfo(profileInfo);
-		pc1.getWholeGraph();
+//		PersonalCloud pc_markus = PersonalCloud.open(
+//				 XDI3Segment.create("=markus"), "markus",
+//				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+//		PersonalCloud pc_animesh = PersonalCloud.open(
+//				 XDI3Segment.create("=dev.animesh3"),pc_markus.getCloudNumber(),
+//				 XDI3Segment.create("$public$do"), "");
+//		ProfileInfo profileInfo = new ProfileInfo();
+//		profileInfo.setEmail("animesh.chowdhury@gmail.com");
+//		profileInfo.setPhone("703-724-7686");
+//
+//		pc1.saveProfileInfo(profileInfo);
+		//pc_animesh.getWholeGraph();
 		//Test.testDeleteNode();
 		//Test.testDefaultLCs();
 		Test.testRelationships();
+		//String cn = pc_animesh.getCloudNumber().toString();
+		
+		//pc_markus.requestForAccess(XDI3Segment.create(cn+"<+email>&"), XDI3Segment.create("$get"), XDI3Segment.create("+friend"), XDI3Segment.create("+friend"), pc_animesh);
+		
+//		PersonalCloud pc_animesh2 = PersonalCloud.open(
+//				 XDI3Segment.create("=dev.animesh3"), "animesh123",
+//				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+//		pc_animesh2.approveAccess(XDI3Segment.create("$public[+pendingrequest]!:uuid:7730e33d-bb40-49d6-85e7-191e4370b221"));
+		
 	}
 }

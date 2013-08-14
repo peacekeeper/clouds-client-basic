@@ -193,10 +193,10 @@ public class PDSXEntity implements PersonalCloudEntity {
 			}
 
 		}
-		XDI3Statement entityCount = XDI3Statement
-				.create(getElementCountAddress(pc) + "/&/\"" + objectMap.size()
-						+ "\"");
-		XDIStmts.add(entityCount);
+//		XDI3Statement entityCount = XDI3Statement
+//				.create(getElementCountAddress(pc) + "/&/\"" + objectMap.size()
+//						+ "\"");
+//		XDIStmts.add(entityCount);
 
 		XDI3Segment orderId = XDI3Segment.create(pc.getCloudNumber().toString()
 				+ "[+" + objectType + "]" + "#" + order);
