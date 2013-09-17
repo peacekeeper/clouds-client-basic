@@ -38,6 +38,7 @@ public class PersonalCloud {
 	private XDI3Segment linkContractAddress = null;
 
 	private XDI3Segment cloudNumber = null;
+	private XDI3Segment cloudName = null;
 	private XDI3Segment senderCloudNumber = null;
 	private String registryURI = null;
 	private String cloudEndpointURI = null;
@@ -48,6 +49,14 @@ public class PersonalCloud {
 	 * factory methods for opening personal clouds
 	 */
 
+	/**
+	 * 
+	 * @param cloudNameOrCloudNumber
+	 * @param secretToken
+	 * @param linkContractAddress
+	 * @param regURI
+	 * @return
+	 */
 	public static PersonalCloud open(XDI3Segment cloudNameOrCloudNumber,
 			String secretToken, XDI3Segment linkContractAddress, String regURI) {
 
@@ -68,19 +77,25 @@ public class PersonalCloud {
 		try {
 			XDIDiscoveryResult discoveryResult = discovery
 					.discoverFromXri(cloudNameOrCloudNumber);
-			pc.cloudNumber = discoveryResult.getCloudNumber();
+			//This is a hack. The getCloudNumber() API returns null if a cloudnumber is passed
+			pc.cloudNumber = discoveryResult.getCloudNumber() == null ? cloudNameOrCloudNumber : discoveryResult.getCloudNumber();
+			//pc.cloudNumber = discoveryResult.getCloudNumber() ;
 			pc.cloudEndpointURI = discoveryResult.getEndpointUri();
+			
 		} catch (Xdi2ClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
+		} finally {
+			httpClient.close();
 		}
 
 		pc.linkContractAddress = linkContractAddress;
 		pc.secretToken = secretToken;
 		pc.senderCloudNumber = pc.cloudNumber;
 		// System.out.println(pc.toString());
-		pc.getProfileInfo();
+		//pc.getProfileInfo();
+		pc.createDefaultLinkContracts();
 		return pc;
 	}
 
@@ -108,7 +123,14 @@ public class PersonalCloud {
 		return str.toString();
 
 	}
-
+/**
+ * Open a peer cloud
+ * @param cloudNameOrCloudNumber : The cloudName/Number for the peer cloud
+ * @param senderCN : Messages will have this cloudNumber as source
+ * @param linkContractAddress
+ * @param regURI
+ * @return
+ */
 	public static PersonalCloud open(XDI3Segment cloudNameOrCloudNumber,
 			XDI3Segment senderCN, XDI3Segment linkContractAddress, String regURI) {
 
@@ -129,12 +151,15 @@ public class PersonalCloud {
 		try {
 			XDIDiscoveryResult discoveryResult = discovery
 					.discoverFromXri(cloudNameOrCloudNumber);
-			pc.cloudNumber = discoveryResult.getCloudNumber();
+			//pc.cloudNumber = discoveryResult.getCloudNumber();
+			pc.cloudNumber = discoveryResult.getCloudNumber() == null ? cloudNameOrCloudNumber : discoveryResult.getCloudNumber();
 			pc.cloudEndpointURI = discoveryResult.getEndpointUri();
 		} catch (Xdi2ClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
+		} finally {
+			httpClient.close();
 		}
 
 		pc.linkContractAddress = linkContractAddress;
@@ -154,7 +179,7 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createGetOperation(XDI3Segment.create("()"));
@@ -187,6 +212,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 		return null;
@@ -240,7 +267,7 @@ public class PersonalCloud {
 
 		message.setSecretToken(secretToken);
 
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 		message.createSetOperation(profileXDIStmts.iterator());
 
@@ -261,6 +288,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 		this.profileInfo = profileInfo;
@@ -283,7 +312,7 @@ public class PersonalCloud {
 		if (secretToken != null) {
 			message.setSecretToken(secretToken);
 		}
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createGetOperation(XDI3Segment.create(cloudNumber.toString()
@@ -321,6 +350,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 		// prepare message envelope for getting phone
@@ -331,7 +362,7 @@ public class PersonalCloud {
 		if (secretToken != null) {
 			message2.setSecretToken(secretToken);
 		}
-		message2.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message2.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message2.createGetOperation(XDI3Segment.create(cloudNumber.toString()
@@ -346,6 +377,8 @@ public class PersonalCloud {
 			e.printStackTrace();
 		}
 
+		xdiClient.close();
+		xdiClient = new XDIHttpClient(cloudEndpointURI);
 		// send the message
 
 		MessageResult messageResult2;
@@ -369,6 +402,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 		this.profileInfo = profileInfo;
@@ -389,7 +424,7 @@ public class PersonalCloud {
 
 		message.setSecretToken(secretToken);
 
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 		message.createSetOperation(XDIStmts.iterator());
 
@@ -424,6 +459,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 		return messageResult;
 	}
@@ -440,7 +477,7 @@ public class PersonalCloud {
 		if (secretToken != null) {
 			message.setSecretToken(secretToken);
 		}
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		GetOperation getOp = message.createGetOperation(query);
@@ -474,6 +511,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 		return messageResult;
 	}
@@ -514,7 +553,7 @@ public class PersonalCloud {
 
 		message.setSecretToken(secretToken);
 
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 		message.createSetOperation(contactXDIStmts.iterator());
 
@@ -555,7 +594,7 @@ public class PersonalCloud {
 		if (secretToken != null) {
 			message.setSecretToken(secretToken);
 		}
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createGetOperation(XDI3Segment.create(cloudNumber.toString()
@@ -614,7 +653,7 @@ public class PersonalCloud {
 		if (secretToken != null) {
 			message.setSecretToken(secretToken);
 		}
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createDelOperation(XDI3Segment.create(cloudNumber.toString()
@@ -688,7 +727,7 @@ public class PersonalCloud {
 
 		message.setSecretToken(secretToken);
 
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createSetOperation(profileXDIStmts.iterator());
@@ -772,7 +811,7 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createSetOperation(XDI3Statement.create(assigneeCN.toString()
@@ -789,8 +828,12 @@ public class PersonalCloud {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
+		
+		xdiClient = new XDIHttpClient(cloudEndpointURI);
 		// send the message
 
 		MessageResult messageResult;
@@ -809,6 +852,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 	}
@@ -823,7 +868,7 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		// message.createDelOperation(XDI3Statement.create(assigneeCN.toString()
@@ -858,6 +903,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 	}
@@ -876,7 +923,7 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		// message.createDelOperation(XDI3Statement.create(assigneeCN.toString()
@@ -912,11 +959,13 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 	}
 
-	public boolean requestForAccess(XDI3Segment requestedObjectXri,
+	public String requestForAccess(XDI3Segment requestedObjectXri,
 			XDI3Segment operation, XDI3Segment fromRelationshipXri,
 			XDI3Segment toRelationshipXri, PersonalCloud peerCloud) {
 
@@ -926,7 +975,7 @@ public class PersonalCloud {
 		message.setLinkContractXri(XDI3Segment
 				.create("$public[+pendingrequest]$do"));
 		
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(peerCloud.getCloudNumber())));
 
 		String reqUUID = "!:uuid:" + UUID.randomUUID().toString();
@@ -934,6 +983,10 @@ public class PersonalCloud {
 		message.createSetOperation(XDI3Statement
 				.create("$public[+pendingrequest]" + reqUUID
 						+ "<+from_cn>&/&/\"" + cloudNumber.toString() + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+to_cn>&/&/\"" + peerCloud.getCloudNumber() + "\""));
+		
 		message.createSetOperation(XDI3Statement
 				.create("$public[+pendingrequest]" + reqUUID
 						+ "<+from_rel>&/&/\"" + fromRelationshipXri.toString()
@@ -950,13 +1003,16 @@ public class PersonalCloud {
 		message.createSetOperation(XDI3Statement
 				.create("$public[+pendingrequest]" + reqUUID
 						+ "<+requested_op>&/&/\"" + operation.toString() + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+requestor_link_contract>&/&/\"" + cloudNumber + toRelationshipXri.toString() + "$do" + "\""));
 		try {
 			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
 					messageEnvelope.getGraph(), System.out);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
+			return "";
 		}
 
 		// send the message
@@ -974,24 +1030,139 @@ public class PersonalCloud {
 		} catch (Xdi2ClientException ex) {
 
 			ex.printStackTrace();
-			return false;
+			return "";
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
-			return false;
+			return "";
+		} finally {
+			xdiClient.close();
 		}
-		return true;
+		
+		//create a pending request entry in sender's graph 
+		xdiClient = new XDIHttpClient(getCloudEndpointURI());
+		messageEnvelope = new MessageEnvelope();
+		message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+		message.setSecretToken(secretToken);
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+from_cn>&/&/\"" + cloudNumber.toString() + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+from_rel>&/&/\"" + fromRelationshipXri.toString()
+						+ "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+to_cn>&/&/\"" + peerCloud.getCloudNumber() + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+to_rel>&/&/\"" + toRelationshipXri.toString()
+						+ "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+requested_object>&/&/\""
+						+ requestedObjectXri.toString() + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+requested_op>&/&/\"" + operation.toString() + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+pendingrequest]" + reqUUID
+						+ "<+requestor_link_contract>&/&/\"" + cloudNumber + toRelationshipXri.toString() + "$do" + "\""));
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
+					System.out);
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+			return "";
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+			return "";
+		} finally {
+			xdiClient.close();
+		}
+		//create the reciprocal relationship in requester graph
+		createRelationship(peerCloud.getCloudNumber(), toRelationshipXri, fromRelationshipXri);
+
+		//create requested object XRI under the peerCloud id in requester graph
+
+		
+		xdiClient = new XDIHttpClient(getCloudEndpointURI());
+		messageEnvelope = new MessageEnvelope();
+		message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+		message.setSecretToken(secretToken);
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+
+		message.createSetOperation(XDI3Statement
+				.create(peerCloud.getCloudNumber() 
+						+ "[<+shared_data>]" + "<" + reqUUID + ">" + "&/&/\""
+						+ requestedObjectXri.toString() + "\""));
+		
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
+					System.out);
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+			return "";
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+			return "";
+		} finally {
+			xdiClient.close();
+		}
+		
+		
+		return new String("$public[+pendingrequest]" + reqUUID);
 	}
 
-	public boolean approveAccess(XDI3Segment requestIdXri) {
+	public boolean approveAccess(XDI3Segment requestIdXri , XDI3Segment mappedTarget) {
 
-		String from, from_rel, to_rel, operation, requested_object;
+		String from = "", to = "", from_rel = "", to_rel = "", operation = "", requested_object = "";
 		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
 		MessageEnvelope messageEnvelope = new MessageEnvelope();
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createGetOperation(requestIdXri);
@@ -1017,6 +1188,14 @@ public class PersonalCloud {
 			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
 			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
 					System.out);
+			//parse the response and get the five components of a request
+			from = response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+from_cn>&")) != null ? response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+from_cn>&")).getLiteralDataString() : "";
+			operation = response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+requested_op>&")) != null ?  response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+requested_op>&")).getLiteralDataString() : "";
+			from_rel = response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+from_rel>&")) != null ? response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+from_rel>&")).getLiteralDataString() : "";
+			to_rel = response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+to_rel>&")) != null ? response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+to_rel>&")).getLiteralDataString() : "";
+			requested_object = response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+requested_object>&")) != null ? response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+requested_object>&")).getLiteralDataString() : "";
+			to = response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+to_cn>&")) != null ? response.getDeepLiteral(XDI3Segment.create(requestIdXri + "<+to_cn>&")).getLiteralDataString() : "";
+			
 			String jsonStr = response.toString("XDI/JSON",
 					null);
 			System.out.println(jsonStr);
@@ -1029,14 +1208,22 @@ public class PersonalCloud {
 
 			ex.printStackTrace();
 			return false;
+		} finally {
+			xdiClient.close();
 		}
 		
+		
+		//approve the request
+		this.allowAccessToRelationship(XDI3Segment.create(requested_object), mappedTarget, XDI3Segment.create(operation), XDI3Segment.create(from_rel), XDI3Segment.create(to_rel), XDI3Segment.create(from));
+		
+		
 		//delete the request
+		xdiClient = new XDIHttpClient(cloudEndpointURI);
 		MessageEnvelope delMessageEnvelope = new MessageEnvelope();
 		Message delMessage = delMessageEnvelope.getMessage(cloudNumber, true);
 		delMessage.setLinkContractXri(linkContractAddress);
 		delMessage.setSecretToken(secretToken);
-		delMessage.setToAddress(XDI3Segment.create(XdiPeerRoot
+		delMessage.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		delMessage.createDelOperation(requestIdXri);
@@ -1061,8 +1248,127 @@ public class PersonalCloud {
 			ex.printStackTrace();
 			return false;
 		}
+		finally {
+			xdiClient.close();
+		}
+		//send a message to peer cloud that the request has been approved
+		PersonalCloud peerCloud = PersonalCloud.open(XDI3Segment.create(from), cloudNumber, XDI3Segment.create("$public$do"), null);
 		
 		
+		xdiClient = new XDIHttpClient(peerCloud.getCloudEndpointURI());
+		messageEnvelope = new MessageEnvelope();
+		message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(XDI3Segment
+				.create("$public[+approvedrequest]$do"));
+		
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(peerCloud.getCloudNumber())));
+
+		String reqUUID = requestIdXri.getLastSubSegment().toString();
+
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+from_cn>&/&/\"" + from + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+from_rel>&/&/\"" + from_rel
+						+ "\""));
+
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+to_rel>&/&/\"" + to_rel
+						+ "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+requested_object>&/&/\""
+						+ requested_object + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+requested_op>&/&/\"" + operation + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+to_cn>&/&/\"" + to + "\""));
+		message.createSetOperation(XDI3Statement
+				.create("$public[+approvedrequest]" + reqUUID
+						+ "<+acceptor_link_contract>&/&/\"" + cloudNumber + from_rel + "$do" + "\""));
+		
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		// send the message
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
+					System.out);
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+			return false;
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+			return false;
+		} finally {
+		
+			xdiClient.close();
+		}
+
+		//send another message to peer cloud to delete the pending request
+		xdiClient = new XDIHttpClient(peerCloud.getCloudEndpointURI());
+		
+		messageEnvelope = new MessageEnvelope();
+		message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(XDI3Segment
+				.create("$public[+pendingrequest]$do"));
+		
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(peerCloud.getCloudNumber())));
+
+		message.createDelOperation(XDI3Segment
+				.create("$public[+pendingrequest]" + reqUUID
+						));
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		// send the message
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
+					System.out);
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+			return false;
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+			return false;
+		} finally {
+			xdiClient.close();
+		}
+
 		return true;
 	}
 
@@ -1073,7 +1379,7 @@ public class PersonalCloud {
 		Message delMessage = delMessageEnvelope.getMessage(cloudNumber, true);
 		delMessage.setLinkContractXri(linkContractAddress);
 		delMessage.setSecretToken(secretToken);
-		delMessage.setToAddress(XDI3Segment.create(XdiPeerRoot
+		delMessage.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		delMessage.createDelOperation(requestIdXri);
@@ -1097,6 +1403,8 @@ public class PersonalCloud {
 
 			ex.printStackTrace();
 			return false;
+		} finally {
+			xdiClient.close();
 		}
 		
 		
@@ -1125,17 +1433,33 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createSetOperation(XDI3Statement.create("$public"
 				+ "[+pendingrequest]" + "$do/" + "$add" + "/" + "$public"
 				+ "[+pendingrequest]"));
 		message.createSetOperation(XDI3Statement.create("$public"
+				+ "[+pendingrequest]" + "$do/" + "$del" + "/" + "$public"
+				+ "[+pendingrequest]"));
+		message.createSetOperation(XDI3Statement.create("$public"
 				+ "[+pendingrequest]" + "$do/" + "$set" + "/" + "$public"
 				+ "[+pendingrequest]"));
 		message.createSetOperation(XDI3Statement.create("$public"
 				+ "[+pendingrequest]"
+				+ "$do$if$and/$true/({$from}/$is/{$from})"));
+		
+		message.createSetOperation(XDI3Statement.create("$public"
+				+ "[+approvedrequest]" + "$do/" + "$add" + "/" + "$public"
+				+ "[+approvedrequest]"));
+//		message.createSetOperation(XDI3Statement.create("$public"
+//				+ "[+approvedrequest]" + "$do/" + "$del" + "/" + "$public"
+//				+ "[+approvedrequest]"));
+		message.createSetOperation(XDI3Statement.create("$public"
+				+ "[+approvedrequest]" + "$do/" + "$set" + "/" + "$public"
+				+ "[+approvedrequest]"));
+		message.createSetOperation(XDI3Statement.create("$public"
+				+ "[+approvedrequest]"
 				+ "$do$if$and/$true/({$from}/$is/{$from})"));
 
 		message.createSetOperation(XDI3Statement.create(cloudNumber + "+friend"
@@ -1194,11 +1518,13 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 	}
 
-	public void createRelationship(PersonalCloud otherPC,
+	public void createRelationship(XDI3Segment peerCloudCN,
 			XDI3Segment relationship, XDI3Segment reverseRelationship) {
 		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
 
@@ -1208,14 +1534,13 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		message.createSetOperation(XDI3Statement.create(cloudNumber + "/"
-				+ relationship + "/" + otherPC.getCloudNumber()));
+				+ relationship + "/" + peerCloudCN));
 
-		message.createSetOperation(XDI3Statement.create(otherPC
-				.getCloudNumber()
+		message.createSetOperation(XDI3Statement.create(peerCloudCN
 				+ "/"
 				+ reverseRelationship
 				+ "/"
@@ -1248,6 +1573,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 	}
 
@@ -1261,13 +1588,13 @@ public class PersonalCloud {
 
 		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
 
-		// prepare message envelope for getting email
+		// prepare message envelope for creating the link contract for accessing the target
 
 		MessageEnvelope messageEnvelope = new MessageEnvelope();
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
 		message.setSecretToken(secretToken);
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
 		if(mapTarget != null){
@@ -1278,11 +1605,11 @@ public class PersonalCloud {
 				+ "/" + target));
 		
 	
-		message.createSetOperation(XDI3Statement.create(cloudNumber + "/"
+		message.createSetOperation(XDI3Statement.create(cloudNumber.toString() + "/"
 				+ relationship + "/" + assigneeCN));
 
 		message.createSetOperation(XDI3Statement.create(assigneeCN + "/"
-				+ reverseRelationship + "/" + cloudNumber));
+				+ reverseRelationship + "/" + cloudNumber.toString()));
 
 		// System.out.println("Message :\n" + messageEnvelope + "\n");
 		try {
@@ -1311,6 +1638,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 
 	}
@@ -1323,7 +1652,7 @@ public class PersonalCloud {
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContract);
 
-		message.setToAddress(XDI3Segment.create(XdiPeerRoot
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(peerCloud.getCloudNumber())));
 
 		message.createGetOperation(targetAddress);
@@ -1355,6 +1684,8 @@ public class PersonalCloud {
 		} catch (Exception ex) {
 
 			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
 		}
 	}
 

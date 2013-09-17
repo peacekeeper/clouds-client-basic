@@ -99,12 +99,13 @@ public class PDSXEntity implements PersonalCloudEntity {
 		
 		Graph responseGraph = objectExists.getGraph();
 		ReadOnlyIterator<Relation> refRelIter = responseGraph.getRootContextNode().getAllRelations();
+		String UUIDStr = "";
 		while(refRelIter.hasNext()){
 			Relation r = refRelIter.next();
 			System.out.println(r.getArcXri().toString());
 			if(r.getArcXri().toString().equals("$ref")){
 				System.out.println(r.getTargetContextNodeXri().toString());
-				String UUIDStr = r.getTargetContextNodeXri().toString();
+				UUIDStr = r.getTargetContextNodeXri().toString();
 				entity.objectUUID = UUIDStr.substring(new String(pc.getCloudNumber().toString()
 				+ "[+" + entityType + "]").length());
 				System.out.println(UUIDStr);
@@ -112,8 +113,9 @@ public class PDSXEntity implements PersonalCloudEntity {
 		}
 		Vector<PDSXElementTemplate> templates = (Vector<PDSXElementTemplate>) (elementTemplates
 				.get(entityType));
+		PDSXElementTemplate template = null;
 		for (int i = 0; i < templates.size(); i++) {
-			PDSXElementTemplate template = templates.elementAt(i);
+			template = templates.elementAt(i);
 			XDI3Segment orderId = XDI3Segment.create(pc.getCloudNumber()
 					.toString()
 					+ "[+"
@@ -130,10 +132,7 @@ public class PDSXEntity implements PersonalCloudEntity {
 			}
 			MemoryGraph response = (MemoryGraph) result.getGraph();
 
-			Literal literalValue = response.getDeepLiteral(XDI3Segment
-					.create(pc.getCloudNumber().toString() + "[+" + entityType
-							+ "]" + "*" + oid + "<+" + template.getName()
-							+ ">&"));
+			Literal literalValue = response.getDeepLiteral(XDI3Segment.create(UUIDStr + "<+" + template.getName() + ">&"));
 			String value = (literalValue == null) ? "" : literalValue
 					.getLiteralData().toString();
 			PDSXElement element = new PDSXElement(entity, template, value);
