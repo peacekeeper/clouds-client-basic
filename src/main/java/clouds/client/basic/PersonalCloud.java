@@ -492,7 +492,60 @@ public class PersonalCloud {
 		}
 		return messageResult;
 	}
+	public MessageResult delXDIStmts(ArrayList<XDI3Statement> XDIStmts) {
 
+		// prepare XDI client
+
+		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
+
+		// prepare message envelope
+
+		MessageEnvelope messageEnvelope = new MessageEnvelope();
+		Message message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+
+		message.setSecretToken(secretToken);
+
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+		message.createDelOperation(XDIStmts.iterator());
+
+		// System.out.println("Message :\n" + messageEnvelope + "\n");
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// send the message
+
+		MessageResult messageResult = null;
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			try {
+				XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+						messageResult.getGraph(), System.out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
+		}
+		return messageResult;
+	}
 	public MessageResult getXDIStmts(XDI3Segment query, boolean isDeref) {
 
 		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
