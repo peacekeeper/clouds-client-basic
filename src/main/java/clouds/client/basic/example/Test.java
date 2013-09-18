@@ -244,16 +244,30 @@ public class Test {
 //		Test.testAccessRemoval();
 		//Test.testSharedDataAccess();
 		//Test.getAllCollections();
-		//Test.testOnOtherPersonalCloudWithDiscovery("=dev.ako");
+		Test.testOnOtherPersonalCloudWithDiscovery("=dev.ako");
 	//Test.testMyOwnPersonalCloud("=dev.ako", "ga3169723");
 		//Test.testSaveProfile("=dev.ako", "ga3169723", "ako@kynetx.com", "1234567890");
-		//Test.testPDSXOps();
+		Test.testPDSXOps();
+//		PersonalCloud pc_peer3 = PersonalCloud.open(
+//				 XDI3Segment.create("=dev.animesh3"),XDI3Segment.create("[=]!:uuid:91f28153-f600-ae24-91f2-8153f600ae24"),
+//				 XDI3Segment.create("$public$do"), "");
+//		PersonalCloud pc_peer2 = PersonalCloud.open(
+//				 XDI3Segment.create("[=]!:uuid:17864069-1ad0-8bfa-1786-40691ad08bfa"),XDI3Segment.create("[=]!:uuid:91f28153-f600-ae24-91f2-8153f600ae24"),
+//				 XDI3Segment.create("$public$do"), "");
+//		PersonalCloud pc_peer = PersonalCloud.open(
+//				 XDI3Segment.create("[=]!:uuid:91f28153-f600-ae24-91f2-8153f600ae24"),XDI3Segment.create("[=]!:uuid:17864069-1ad0-8bfa-1786-40691ad08bfa"),
+//				 XDI3Segment.create("$public$do"), "");
+		
+		
 //		PersonalCloud pc_markus = PersonalCloud.open(
 //				 XDI3Segment.create("=markus"), "markus",
 //				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
 //		PersonalCloud pc_animesh = PersonalCloud.open(
 //				 XDI3Segment.create("=dev.animesh3"),pc_markus.getCloudNumber(),
 //				 XDI3Segment.create("$public$do"), "");
+//		PersonalCloud pc_animesh2 = PersonalCloud.open(
+//				 XDI3Segment.create("=dev.animesh3"), "animesh123",
+//				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
 //		ProfileInfo profileInfo = new ProfileInfo();
 //		profileInfo.setEmail("animesh.chowdhury@gmail.com");
 //		profileInfo.setPhone("703-724-7686");
@@ -261,16 +275,14 @@ public class Test {
 //		pc1.saveProfileInfo(profileInfo);
 		//pc_animesh.getWholeGraph();
 		//Test.testDeleteNode();
-		//Test.testDefaultLCs();
-		Test.testRelationships();
-		//String cn = pc_animesh.getCloudNumber().toString();
-		
-		//pc_markus.requestForAccess(XDI3Segment.create(cn+"<+email>&"), XDI3Segment.create("$get"), XDI3Segment.create("+friend"), XDI3Segment.create("+friend"), pc_animesh);
-		
-//		PersonalCloud pc_animesh2 = PersonalCloud.open(
-//				 XDI3Segment.create("=dev.animesh3"), "animesh123",
-//				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
-//		pc_animesh2.approveAccess(XDI3Segment.create("$public[+pendingrequest]!:uuid:7730e33d-bb40-49d6-85e7-191e4370b221"));
+//		Test.testDefaultLCs();
+		//Test.testRelationships();
+//		String cn = pc_animesh.getCloudNumber().toString();
+//		
+//		String reqURI = pc_markus.requestForAccess(XDI3Segment.create(cn+"+home<+phone>&"), XDI3Segment.create("$get"), XDI3Segment.create("+friend"), XDI3Segment.create("+friend"), pc_animesh);
+//		
+//		
+//		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
 		
 	}
 }
