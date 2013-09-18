@@ -168,6 +168,34 @@ public class PersonalCloud {
 		// pc.getProfileInfo();
 		return pc;
 	}
+	
+	public static String findCloudNumber(String cloudName , String regURI){
+		XDIDiscoveryResult discoveryResult = null;
+		XDIHttpClient httpClient = null;
+		if (regURI != null && regURI.length() > 0) {
+			httpClient = new XDIHttpClient(regURI);
+			
+		} else {
+			httpClient = new XDIHttpClient(DEFAULT_REGISTRY_URI);
+			
+		}
+		XDIDiscovery discovery = new XDIDiscovery();
+		discovery.setRegistryXdiClient(httpClient);
+		try {
+			discoveryResult = discovery
+					.discoverFromXri(XDI3Segment.create(cloudName));
+			
+			
+		} catch (Xdi2ClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} finally {
+			httpClient.close();
+		}
+		
+		return discoveryResult != null ? discoveryResult.getCloudNumber().toString() : "";
+	}
 
 	public Graph getWholeGraph() {
 
