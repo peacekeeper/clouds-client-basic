@@ -14,6 +14,7 @@ import xdi2.client.http.XDIHttpClient;
 import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.Literal;
+import xdi2.core.Relation;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
 import xdi2.core.impl.memory.MemoryGraph;
 import xdi2.core.io.XDIWriterRegistry;
@@ -95,7 +96,7 @@ public class PersonalCloud {
 		pc.senderCloudNumber = pc.cloudNumber;
 		// System.out.println(pc.toString());
 		//pc.getProfileInfo();
-		pc.createDefaultLinkContracts();
+		//pc.createDefaultLinkContracts();
 		return pc;
 	}
 
@@ -322,6 +323,26 @@ public class PersonalCloud {
 
 		this.profileInfo = profileInfo;
 
+	}
+	
+	public String getDataBucket(String bucketName){
+		String values = new String();
+		
+		 XDI3Segment query = XDI3Segment.create(cloudNumber + "[<+" + bucketName + ">]");
+		 MessageResult result = getXDIStmts(query,true);
+		 
+		 MemoryGraph response = (MemoryGraph) result.getGraph();
+		 ContextNode root = response.getRootContextNode();
+		 ReadOnlyIterator<Literal> literals = root.getAllLiterals();
+		 while(literals.hasNext()){
+			 Literal literal = literals.next();
+			 
+			 values += literal.getLiteralDataString();
+			 values += ";";
+		 }
+		 
+		 
+		 return values;
 	}
 
 	public ProfileInfo getProfileInfo() {
