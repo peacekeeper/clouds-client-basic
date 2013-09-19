@@ -96,7 +96,7 @@ public class PersonalCloud {
 		pc.senderCloudNumber = pc.cloudNumber;
 		// System.out.println(pc.toString());
 		//pc.getProfileInfo();
-		//pc.createDefaultLinkContracts();
+		pc.createDefaultLinkContracts();
 		return pc;
 	}
 
