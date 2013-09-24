@@ -17,7 +17,7 @@ import xdi2.messaging.MessageEnvelope;
 import xdi2.messaging.MessageResult;
 import xdi2.messaging.target.interceptor.impl.authentication.secrettoken.DigestSecretTokenAuthenticator;
 
-public abstract class CSPClient {
+public  class CSPClient {
 
 	public static final String RESPECT_NETWORK_REGISTRAR_XDI_ENDPOINT = "http://mycloud.neustar.biz:12230/";
 	public static final XDI3Segment RESPECT_NETWORK_CLOUD_NUMBER = XDI3Segment
@@ -29,8 +29,10 @@ public abstract class CSPClient {
 
 	public static void main(String[] args) throws Exception {
 
-		CSP csp = new CSPNeustar();
-
+		CSP csp = new CSPOwnYourInfo();
+		xdiClientHostingEnvironmentRegistry = new XDIHttpClient(
+				csp.getHostingEnvironmentRegistryXdiEndpoint());
+		
 		String cloudName = args[0];
 		String secretToken = new String("");
 			if(args.length == 2){
@@ -47,6 +49,9 @@ public abstract class CSPClient {
 			XDI3Segment cloudNumberPeerRootXri = registerCloudName(csp,
 					cloudName);
 
+			cloudNumber = XdiPeerRoot
+					.getXriOfPeerRootArcXri(cloudNumberPeerRootXri
+							.getFirstSubSegment());
 			if (cloudNumberPeerRootXri != null
 					&& cloudNumberPeerRootXri.toString().length() > 0) {
 				// step 3: Register Cloud with Cloud Number and Shared Secret
@@ -65,7 +70,7 @@ public abstract class CSPClient {
 		}
 	}
 
-	private static XDI3Segment checkCloudNameAvailable(CSP csp,
+	public static XDI3Segment checkCloudNameAvailable(CSP csp,
 			String cloudNameStr) throws Exception {
 
 		MessageEnvelope messageEnvelope = new MessageEnvelope();
@@ -75,9 +80,7 @@ public abstract class CSPClient {
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(RESPECT_NETWORK_CLOUD_NUMBER)));
 		message.setLinkContractXri(XDI3Segment.create("+registrar$do"));
-		message.getContextNode().setDeepLiteral(
-				XDIAuthenticationConstants.XRI_S_SECRET_TOKEN_VALID_VALUE,
-				csp.getCSPSecretToken());
+		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
 
 		XDI3Segment cloudName = XDI3Segment.create(cloudNameStr);
 		XDI3Segment cloudNamePeerRootXri = XDI3Segment
@@ -116,9 +119,10 @@ public abstract class CSPClient {
 		}
 	}
 
-	private static XDI3Segment registerCloudName(CSP csp, String cloudNameStr)
+	public static XDI3Segment registerCloudName(CSP csp, String cloudNameStr)
 			throws Exception {
 
+		
 		MessageEnvelope messageEnvelope = new MessageEnvelope();
 
 		Message message = messageEnvelope.getMessage(csp.getCSPCloudNumber(),
@@ -126,9 +130,7 @@ public abstract class CSPClient {
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(RESPECT_NETWORK_CLOUD_NUMBER)));
 		message.setLinkContractXri(XDI3Segment.create("+registrar$do"));
-		message.getContextNode().setDeepLiteral(
-				XDIAuthenticationConstants.XRI_S_SECRET_TOKEN,
-				csp.getCSPSecretToken());
+		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
 
 		XDI3Segment cloudName = XDI3Segment.create(cloudNameStr);
 		XDI3Segment cloudNamePeerRootXri = XDI3Segment
@@ -159,7 +161,7 @@ public abstract class CSPClient {
 
 	}
 
-	private static String registerCloud(CSP csp, XDI3Segment cloudName,
+	public static String registerCloud(CSP csp, XDI3Segment cloudName,
 			XDI3Segment cloudNumber, XDI3Segment cloudNumberPeerRootXri,
 			String secretToken) throws Exception {
 
@@ -170,9 +172,7 @@ public abstract class CSPClient {
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(csp.getCSPCloudNumber())));
 		message.setLinkContractXri(XDI3Segment.create("$do"));
-		message.getContextNode().setDeepLiteral(
-				XDIAuthenticationConstants.XRI_S_SECRET_TOKEN,
-				csp.getCSPSecretToken());
+		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
 
 		String digestSecretToken = DigestSecretTokenAuthenticator
 				.localSaltAndDigestSecretToken(secretToken, csp.getGlobalSalt());
@@ -183,24 +183,14 @@ public abstract class CSPClient {
 				.fromComponent(XdiPeerRoot.createPeerRootArcXri(cloudName));
 
 		XDI3Statement[] targetStatements = new XDI3Statement[] {
-				XDI3Statement.fromRelationComponents(cloudNamePeerRootXri,
-						XDIDictionaryConstants.XRI_S_REF,
-						cloudNumberPeerRootXri),
-				XDI3Statement
-						.fromLiteralComponents(
-								XDI3Segment
-										.create(""
-												+ cloudNumberPeerRootXri
-												+ XDIAuthenticationConstants.XRI_S_DIGEST_SECRET_TOKEN_VALUE),
-								digestSecretToken),
-				XDI3Statement.fromLiteralComponents(
-						XDI3Segment.create("" + cloudNumberPeerRootXri
-								+ "$xdi<$uri>&"), cloudXdiEndpoint) };
+				XDI3Statement.fromRelationComponents(cloudNamePeerRootXri, XDIDictionaryConstants.XRI_S_REF, cloudNumberPeerRootXri),
+				XDI3Statement.fromLiteralComponents(XDI3Segment.create("" + cloudNumberPeerRootXri + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), digestSecretToken),
+				XDI3Statement.fromLiteralComponents(XDI3Segment.create("" + cloudNumberPeerRootXri + "$xdi<$uri>&"), cloudXdiEndpoint)
+		};
 
 		message.createSetOperation(Arrays.asList(targetStatements).iterator());
 
-		xdiClientHostingEnvironmentRegistry = new XDIHttpClient(
-				csp.getHostingEnvironmentRegistryXdiEndpoint());
+		
 
 		xdiClientHostingEnvironmentRegistry.send(messageEnvelope, null);
 
@@ -211,7 +201,7 @@ public abstract class CSPClient {
 		return cloudXdiEndpoint;
 	}
 
-	private static boolean registerCloudXdiUrl(CSP csp,
+	public static boolean registerCloudXdiUrl(CSP csp,
 			XDI3Segment cloudNumberPeerRootXri, String cloudXdiEndpoint)
 			throws Exception {
 
@@ -222,10 +212,8 @@ public abstract class CSPClient {
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(RESPECT_NETWORK_CLOUD_NUMBER)));
 		message.setLinkContractXri(XDI3Segment.create("+registrar$do"));
-		message.getContextNode().setDeepLiteral(
-				XDIAuthenticationConstants.XRI_S_SECRET_TOKEN,
-				csp.getCSPSecretToken());
-
+		
+		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
 		XDI3Statement targetStatement = XDI3Statement
 				.fromLiteralComponents(
 						XDI3Segment.create("" + cloudNumberPeerRootXri

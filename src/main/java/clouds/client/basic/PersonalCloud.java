@@ -78,9 +78,12 @@ public class PersonalCloud {
 		try {
 			XDIDiscoveryResult discoveryResult = discovery
 					.discoverFromXri(cloudNameOrCloudNumber);
-			//This is a hack. The getCloudNumber() API returns null if a cloudnumber is passed
-			pc.cloudNumber = discoveryResult.getCloudNumber() == null ? cloudNameOrCloudNumber : discoveryResult.getCloudNumber();
-			//pc.cloudNumber = discoveryResult.getCloudNumber() ;
+			//if the cloudName or cloudNumber is not registered in the Registry, then return null
+			if(discoveryResult.getCloudNumber() == null){
+				return null;
+			}
+
+			pc.cloudNumber = discoveryResult.getCloudNumber() ;
 			pc.cloudEndpointURI = discoveryResult.getEndpointUri();
 			
 		} catch (Xdi2ClientException e) {
@@ -152,8 +155,12 @@ public class PersonalCloud {
 		try {
 			XDIDiscoveryResult discoveryResult = discovery
 					.discoverFromXri(cloudNameOrCloudNumber);
-			//pc.cloudNumber = discoveryResult.getCloudNumber();
-			pc.cloudNumber = discoveryResult.getCloudNumber() == null ? cloudNameOrCloudNumber : discoveryResult.getCloudNumber();
+			//if the cloudName or cloudNumber is not registered in the Registry, then return null
+			if(discoveryResult.getCloudNumber() == null){
+				return null;
+			}
+
+			pc.cloudNumber = discoveryResult.getCloudNumber();
 			pc.cloudEndpointURI = discoveryResult.getEndpointUri();
 		} catch (Xdi2ClientException e) {
 			// TODO Auto-generated catch block
@@ -1789,6 +1796,69 @@ public class PersonalCloud {
 		} finally {
 			xdiClient.close();
 		}
+	}
+	/**
+	 * 
+	 * @param cloudName : Desired cloudName for the cloud
+	 * @param secretToken : Alphanumeric string which will be used as the password to login to the cloud
+	 * @param CSPName : Name of the CSP under which this cloud should be created. Valid values are "Neustar", "OwnYourInfo"
+	 * @return
+	 */
+	public static PersonalCloud create(String cloudName,
+			String secretToken, String CSPName) {
+		CSP csp = null;
+		if(CSPName.equalsIgnoreCase("Neustar")){
+			csp = new CSPNeustar();
+		} else if(CSPName.equalsIgnoreCase("OwnYourInfo")){
+			csp = new CSPOwnYourInfo();
+		}
+		
+		if (csp == null) {
+			System.out.println("No valid CSP found for the given CSP name.");
+			return null;
+		}
+		
+		PersonalCloud pc = new PersonalCloud();
+		try {
+		// step 1: Check if Cloud Name available
+
+		XDI3Segment cloudNumber = CSPClient.checkCloudNameAvailable(csp, cloudName);
+
+		// step 2: Register Cloud Name
+		if (cloudNumber == null || cloudNumber.toString().length() == 0) {
+
+			XDI3Segment cloudNumberPeerRootXri = CSPClient.registerCloudName(csp,
+					cloudName);
+
+			if (cloudNumberPeerRootXri != null
+					&& cloudNumberPeerRootXri.toString().length() > 0) {
+				// step 3: Register Cloud with Cloud Number and Shared Secret
+
+				String xdiEndpoint = CSPClient.registerCloud(csp,
+						XDI3Segment.create(cloudName), cloudNumber,
+						cloudNumberPeerRootXri, secretToken);
+
+				if (xdiEndpoint.length() > 0) {
+					// step 4: Register Cloud XDI URL with Cloud Number
+
+					CSPClient.registerCloudXdiUrl(csp, cloudNumberPeerRootXri,
+							xdiEndpoint);
+					pc.cloudNumber = cloudNumber;
+					pc.cloudEndpointURI = xdiEndpoint;
+				}
+			}
+		}
+		} catch (Exception ex){
+			ex.printStackTrace();
+			return null;
+		}
+
+		pc.linkContractAddress = PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT;
+		pc.secretToken = secretToken;
+		pc.senderCloudNumber = pc.cloudNumber;
+		pc.createDefaultLinkContracts();
+		return pc;
+		
 	}
 
 }

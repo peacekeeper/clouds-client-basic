@@ -244,10 +244,10 @@ public class Test {
 //		Test.testAccessRemoval();
 		//Test.testSharedDataAccess();
 		//Test.getAllCollections();
-		Test.testOnOtherPersonalCloudWithDiscovery("=dev.ako");
+		//Test.testOnOtherPersonalCloudWithDiscovery("=dev.ako");
 	//Test.testMyOwnPersonalCloud("=dev.ako", "ga3169723");
 		//Test.testSaveProfile("=dev.ako", "ga3169723", "ako@kynetx.com", "1234567890");
-		Test.testPDSXOps();
+		//Test.testPDSXOps();
 //		PersonalCloud pc_peer3 = PersonalCloud.open(
 //				 XDI3Segment.create("=dev.animesh3"),XDI3Segment.create("[=]!:uuid:91f28153-f600-ae24-91f2-8153f600ae24"),
 //				 XDI3Segment.create("$public$do"), "");
@@ -283,6 +283,9 @@ public class Test {
 //		
 //		
 //		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
+		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+		pc.getDataBucket("work");
+		
 		
 	}
 }
