@@ -20,7 +20,7 @@ public class Test {
 	public static void testSaveProfile(String name , String passwd, String email , String phone) {
 		// open my own personal cloud
 
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"");
+		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"","");
 
 		// store my profile info
 
@@ -34,7 +34,7 @@ public class Test {
 
 		// open my own personal cloud
 
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"");
+		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"","");
 
 		// store my profile info
 
@@ -62,7 +62,7 @@ public class Test {
 
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		// open someone else's personal cloud
 		 PersonalCloud pc_markus = PersonalCloud.open(
 		 XDI3Segment.create(name),pc1.getCloudNumber(),
@@ -75,7 +75,7 @@ public class Test {
 		
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		
 		 PCAttributeCollection todoList = new PCAttributeCollection("TODO");
 		 PCAttribute task1 = new PCAttribute("Task1",
@@ -101,7 +101,7 @@ public class Test {
 	public static void testAccessGranting(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 
 				ProfileInfo pc1Prof = new ProfileInfo();
 				 pc1Prof.setEmail("animesh.chowdhury@neustar.biz");
@@ -128,7 +128,7 @@ public class Test {
 		
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 
 				ProfileInfo pc1Prof = new ProfileInfo();
 				 pc1.removeAccess( null,XDI3Segment.create("=markus"));
@@ -138,7 +138,7 @@ public class Test {
 	public static void testSharedDataAccess() {
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=markus"), "markus",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		PersonalCloud pc2 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), pc1.getCloudNumber(),
 				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
@@ -150,13 +150,13 @@ public class Test {
 	public static void getAllCollections(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		ArrayList<PCAttributeCollection> allColls = pc1.geAllCollections();
 	}
 	public static void testPDSXOps(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		PDSXElementTemplate profileNameTemplate = new PDSXElementTemplate("myProfileName","Name", true, "text", "What is your name?");
 		PDSXElementTemplate profileEmailTemplate = new PDSXElementTemplate("myProfileEmail","Email", true, "text", "Your home email address");
 		PDSXEntity.addTemplate("Person",profileNameTemplate);
@@ -184,14 +184,14 @@ public class Test {
 	public static void testDefaultLCs(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh3"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		pc1.createDefaultLinkContracts();
 		pc1.getWholeGraph();
 	}
 	public static void testRelationships(){
 		PersonalCloud pc_animesh = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh3"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		PersonalCloud pc_markus = PersonalCloud.open(
 				 XDI3Segment.create("=markus"),pc_animesh.getCloudNumber(),
 				 XDI3Segment.create("$public$do"), "");
@@ -216,7 +216,7 @@ public class Test {
 		pc_animesh.getWholeGraph();
 		PersonalCloud pc_markus2 = PersonalCloud.open(
 				 XDI3Segment.create("=markus"), "markus",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		
 		PersonalCloud pc_animesh2 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh3"),pc_markus2.getCloudNumber(),
@@ -229,7 +229,7 @@ public class Test {
 	public static void testDeleteNode(){
 		PersonalCloud pc_animesh = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		pc_animesh.deleteNodeTree(XDI3Segment.create("[=]!:uuid:0c5525d0-2744-ecf4-0c55-25d02744ecf4+friend"));
 		pc_animesh.deleteNodeTree(XDI3Segment.create("[=]!:uuid:0c5525d0-2744-ecf4-0c55-25d02744ecf4+family"));
 		pc_animesh.deleteNodeTree(XDI3Segment.create("[=]!:uuid:0c5525d0-2744-ecf4-0c55-25d02744ecf4+coworker"));
@@ -283,7 +283,7 @@ public class Test {
 //		
 //		
 //		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
-		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		pc.getDataBucket("work");
 		
 		
