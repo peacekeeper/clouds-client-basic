@@ -81,7 +81,7 @@ public class PersonalCloud {
 		discovery.setRegistryXdiClient(httpClient);
 		try {
 			ArrayList<XDI3Segment> endpointUriTypes = new ArrayList<XDI3Segment>();
-			endpointUriTypes.add(XDI3Segment.create("xdi"));
+			endpointUriTypes.add(XDI3Segment.create("$xdi"));
 			XDIDiscoveryResult discoveryResult = discovery
 					.discoverFromRegistry(cloudNameOrCloudNumber,endpointUriTypes.toArray(new XDI3Segment[endpointUriTypes.size()]));
 			// if the cloudName or cloudNumber is not registered in the
@@ -178,7 +178,7 @@ public class PersonalCloud {
 		discovery.setRegistryXdiClient(httpClient);
 		try {
 			ArrayList<XDI3Segment> endpointUriTypes = new ArrayList<XDI3Segment>();
-			endpointUriTypes.add(XDI3Segment.create("xdi"));
+			endpointUriTypes.add(XDI3Segment.create("$xdi"));
 			XDIDiscoveryResult discoveryResult = discovery.discoverFromRegistry(cloudNameOrCloudNumber,endpointUriTypes.toArray(new XDI3Segment[endpointUriTypes.size()]));
 			// if the cloudName or cloudNumber is not registered in the
 			// Registry, then return null
@@ -217,7 +217,7 @@ public class PersonalCloud {
 		discovery.setRegistryXdiClient(httpClient);
 		try {
 			ArrayList<XDI3Segment> endpointUriTypes = new ArrayList<XDI3Segment>();
-			endpointUriTypes.add(XDI3Segment.create("xdi"));		
+			endpointUriTypes.add(XDI3Segment.create("$xdi"));		
 			discoveryResult = discovery.discoverFromRegistry(XDI3Segment
 					.create(cloudName),endpointUriTypes.toArray(new XDI3Segment[endpointUriTypes.size()]));
 
