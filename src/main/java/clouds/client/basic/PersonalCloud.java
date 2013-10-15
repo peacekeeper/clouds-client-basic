@@ -3,6 +3,7 @@ package clouds.client.basic;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -2081,7 +2082,7 @@ public class PersonalCloud {
 			buf.append(", welcome to your Connect Service.</p>");
 			buf.append("<p>Please authenticate:</p>");
 			buf.append("<form action=\"http://mycloud.neustar.biz:8080/");
-			buf.append(respondingPartyCloudNumber);
+			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
 			buf.append("/connect/authorize\" method=\"post\">");
 //			buf.append("<input type=\"hidden\" name=\"lcTemplateAddress\" value=\"");
 //			buf.append(lcTemplateAddress);
@@ -2123,6 +2124,8 @@ public class PersonalCloud {
 		String result = null;
 		this.secretToken = authToken;
 		this.linkContractAddress = PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT;
+		this.cloudNumber = XDI3Segment.create(respondingPartyCloudNumber);
+		this.senderCloudNumber = XDI3Segment.create(respondingPartyCloudNumber);
 		
 		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
 		String templateOwnerInumber = null;
@@ -2184,25 +2187,56 @@ public class PersonalCloud {
 				}
 				
 			}
-			ArrayList<String> queryDataFields = new ArrayList<String>();
-			for(XDI3Segment dataField : getDataFields){
-				String dataFieldStr = dataField.toString();
-				dataFieldStr = dataFieldStr.replace("{$to}", respondingPartyCloudNumber);
-				queryDataFields.add(dataFieldStr);
-			}
 			Literal requestingPartyNameLit = responseRootContext.getDeepLiteral(XDI3Segment.create(templateOwnerInumber + "<+name>&"));
 			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
 			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
+
+			querySegments = new ArrayList<XDI3Segment>();
+			queryStmts = new ArrayList<XDI3Statement>();
+			for(XDI3Segment dataField : getDataFields){
+				String dataFieldStr = dataField.toString();
+				dataFieldStr = dataFieldStr.replace("{$to}", respondingPartyCloudNumber);
+				
+				querySegments.add(XDI3Segment.create(dataFieldStr));
+			}
+			MessageResult responseFromThisCloud = this.sendQueries(querySegments, queryStmts,false);
+
+			Graph responseGraph2 = responseFromThisCloud.getGraph();
+			ContextNode responseRootContext2 = responseGraph2.getRootContextNode();
+			ReadOnlyIterator<Literal> allLiteralsFromResponse = responseRootContext2.getAllLiterals();
 			
 			//prepare authorization input HTML
 			
 			StringBuffer buf = new StringBuffer();
 			buf.append("<html>");
+			buf.append("<p>Link Contract Authorization Form</p>");
+			buf.append("<p>");
+			buf.append(requestingPartyNameLit.getLiteralDataString() + "(Cloud Name: " + requestingPartyCloudNumberCtx + " is offering to connect to your Cloud via Respect Connect.</p>");
+			buf.append("<p>Please approve the link contract:</p>");
 			buf.append("<form action=\"http://mycloud.neustar.biz:8080/");
-			buf.append(respondingPartyCloudNumber);
+			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
 			buf.append("/connect/approve\" method=\"post\">");
+
+			for(Literal lit : allLiteralsFromResponse){
+				String str = new String("<input type=\"checkbox\" name=\"") + lit.getContextNode().toString()  + "\""; 
+				str +=	"\" value=\"";
+				str += lit.getLiteralDataString();
+				str += "\">";
+				str += lit.getLiteralDataString();
+				str += "</input>";
+				buf.append(str);
+			}
+			buf.append("<input type=\"hidden\" name=\"authToken\" value=\"");
+			buf.append(authToken);
+			buf.append("\">");
+			buf.append("</input>");
+
+			buf.append("<input type=\"submit\" value=\"Approve!\"");
+			buf.append("<input type=\"submit\" value=\"Reject!\"");
 			buf.append("</form>");
 			buf.append("</html>");
+			
+			result = buf.toString();
 			
 		} catch (Xdi2ParseException e) {
 			// TODO Auto-generated catch block
