@@ -2003,7 +2003,9 @@ public class PersonalCloud {
 	public String showAuthenticationForm(String respectConnectRequest , String respondingPartyCloudName , String respondingPartyCloudNumber){
 		
 		String result = null;
-		
+		System.out.println("Connect Request :\n" + respectConnectRequest);
+		System.out.println("respondingPartyCloudName :\n" + respondingPartyCloudName);
+		System.out.println("respondingPartyCloudNumber : \n" + respondingPartyCloudNumber );
 		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
 		String templateOwnerInumber = null;
 		try {
@@ -2069,29 +2071,35 @@ public class PersonalCloud {
 			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
 			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
 			
-			//prepare LC Approval HTML
+			//prepare secret token input HTML
 			
 			StringBuffer buf = new StringBuffer();
 			
 			buf.append("<html>");
-			buf.append("<p>Hello");
+			buf.append("<p>Hello : ");
 			buf.append(respondingPartyCloudName);
-			buf.append(", welcome to your Connect Service.</p");
+			buf.append(", welcome to your Connect Service.</p>");
 			buf.append("<p>Please authenticate:</p>");
-			buf.append("<form action=\"http://mycloud.neustar.biz/");
+			buf.append("<form action=\"http://mycloud.neustar.biz:8080/");
 			buf.append(respondingPartyCloudNumber);
-			buf.append("/connect/request\" method=\"post\">");
-			buf.append("<input type=\"hidden\" name=\"lcTemplateAddress\" value=\"");
-			buf.append(lcTemplateAddress);
-			buf.append("\">");
-			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"relyingParty\" value=\"");
-			buf.append(templateOwnerInumber);
-			buf.append("\">");
-			buf.append("</input>");
+			buf.append("/connect/authorize\" method=\"post\">");
+//			buf.append("<input type=\"hidden\" name=\"lcTemplateAddress\" value=\"");
+//			buf.append(lcTemplateAddress);
+//			buf.append("\">");
+//			buf.append("</input>");
+//			buf.append("<input type=\"hidden\" name=\"relyingParty\" value=\"");
+//			buf.append(templateOwnerInumber);
+//			buf.append("\">");
+//			buf.append("</input>");
 			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
 			buf.append("</input>");
 			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\""); 
+			buf.append(respectConnectRequest);
+			buf.append("\">");
 			buf.append("</input>");
 			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
 			buf.append("<input type=\"submit\" value=\"Authenticate!\"/>");
@@ -2099,6 +2107,7 @@ public class PersonalCloud {
 			buf.append("</html>");
 			
 			result = buf.toString();
+			System.out.println("Result HTML:\n" + result);
 			
 		} catch (Xdi2ParseException e) {
 			// TODO Auto-generated catch block
@@ -2109,6 +2118,100 @@ public class PersonalCloud {
 		}
 		return result;
 		
+	}
+	public String showApprovalForm(String connectRequest, String respondingPartyCloudNumber , String authToken){
+		String result = null;
+		this.secretToken = authToken;
+		this.linkContractAddress = PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT;
+		
+		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
+		String templateOwnerInumber = null;
+		try {
+			Graph g = graphFactory.parseGraph(connectRequest);
+			//get remote cloud number 
+			
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(g,
+					System.out);
+			ContextNode c = g.getRootContextNode();
+			ReadOnlyIterator<ContextNode> allCNodes = c.getAllContextNodes();
+			for(ContextNode ci : allCNodes){
+				if(ci.containsContextNode(XDI3SubSegment.create("[$msg]"))){								
+					templateOwnerInumber = ci.toString(); 
+					System.out.println(templateOwnerInumber);
+					break;
+				}
+			}
+			if (templateOwnerInumber == null){
+				System.out.println("No cloudnumber for requestor/template owner");
+				return result;
+			}
+			//get the address of the link contract template
+			//$set{$do}
+			
+			String lcTemplateAddress = null;
+			
+			ReadOnlyIterator<Relation> allRelations = c.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for(Relation r : allRelations){
+				if(r.getArcXri().toString().equals("$set{$do}")){
+					lcTemplateAddress = r.getTargetContextNodeXri().toString();
+					System.out.println(r.getTargetContextNodeXri());
+				}
+				
+			}
+			if (lcTemplateAddress == null){
+				System.out.println("No LC template address provided");
+				return result;
+			}
+			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
+			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
+			querySegments.add(XDI3Segment.create(templateOwnerInumber + "<+name>"));
+			querySegments.add(XDI3Segment.create(lcTemplateAddress));
+			ArrayList<XDI3Statement> queryStmts = new ArrayList<XDI3Statement>();
+			queryStmts.add(XDI3Statement.create(templateOwnerInumber + "/$is$ref/{}"));
+			MessageResult responseFromRemoteCloud = remoteCloud.sendQueries(querySegments, queryStmts,false);
+
+			Graph responseGraph = responseFromRemoteCloud.getGraph();
+			ContextNode responseRootContext = responseGraph.getRootContextNode();
+			//get requested data fields
+			
+			ArrayList<XDI3Segment> getDataFields = new ArrayList<XDI3Segment>();
+			
+			ReadOnlyIterator<Relation> getRelations = responseRootContext.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for(Relation r : getRelations){
+				if(r.getArcXri().toString().equals("$get")){
+					getDataFields.add(r.getTargetContextNodeXri());
+					System.out.println(r.getTargetContextNodeXri());
+				}
+				
+			}
+			ArrayList<String> queryDataFields = new ArrayList<String>();
+			for(XDI3Segment dataField : getDataFields){
+				String dataFieldStr = dataField.toString();
+				dataFieldStr = dataFieldStr.replace("{$to}", respondingPartyCloudNumber);
+				queryDataFields.add(dataFieldStr);
+			}
+			Literal requestingPartyNameLit = responseRootContext.getDeepLiteral(XDI3Segment.create(templateOwnerInumber + "<+name>&"));
+			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
+			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
+			
+			//prepare authorization input HTML
+			
+			StringBuffer buf = new StringBuffer();
+			buf.append("<html>");
+			buf.append("<form action=\"http://mycloud.neustar.biz:8080/");
+			buf.append(respondingPartyCloudNumber);
+			buf.append("/connect/approve\" method=\"post\">");
+			buf.append("</form>");
+			buf.append("</html>");
+			
+		} catch (Xdi2ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }
