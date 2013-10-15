@@ -16,7 +16,9 @@ import xdi2.core.ContextNode;
 import xdi2.core.Graph;
 import xdi2.core.Literal;
 import xdi2.core.Relation;
+import xdi2.core.exceptions.Xdi2ParseException;
 import xdi2.core.features.nodetypes.XdiPeerRoot;
+import xdi2.core.impl.json.memory.MemoryJSONGraphFactory;
 import xdi2.core.impl.memory.MemoryGraph;
 import xdi2.core.io.XDIWriterRegistry;
 import xdi2.core.util.iterators.ReadOnlyIterator;
@@ -106,10 +108,10 @@ public class PersonalCloud {
 		pc.senderCloudNumber = pc.cloudNumber;
 		// System.out.println(pc.toString());
 		// pc.getProfileInfo();
-		pc.createDefaultLinkContracts();
+		//pc.createDefaultLinkContracts();
 		if (session == null || session.isEmpty()) {
-			String sessionId = "[+session]" + "!:uuid:"
-					+ UUID.randomUUID().toString();
+			String sessionId = pc.cloudNumber + "[+session]" + "!:uuid:"
+					+ UUID.randomUUID().toString() ;
 			long sessionValidityPeriod = Calendar.getInstance().getTimeInMillis() + 86400*1000;
 			String expirationDate = sessionId + "$not$valid$after<$t>&/&/"
 					+ sessionValidityPeriod + "";
@@ -121,7 +123,11 @@ public class PersonalCloud {
 		}
 		return pc;
 	}
-
+	public static PersonalCloud open(XDI3Segment cloudNameOrCloudNumber,
+			String secretToken, XDI3Segment linkContractAddress, String regURI) 
+	{
+		return PersonalCloud.open(cloudNameOrCloudNumber, secretToken, linkContractAddress, regURI,null);
+	}
 	@Override
 	public String toString() {
 
@@ -603,6 +609,62 @@ public class PersonalCloud {
 		}
 		return messageResult;
 	}
+	public MessageResult sendQueries(ArrayList<XDI3Segment> queries, ArrayList<XDI3Statement> queryStmts , boolean isDeref) {
+
+		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
+
+		// prepare message envelope
+
+		MessageEnvelope messageEnvelope = new MessageEnvelope();
+		Message message = messageEnvelope.getMessage(senderCloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+		if (secretToken != null) {
+			message.setSecretToken(secretToken);
+		}
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+
+		Iterator<XDI3Segment> queryIter = queries.iterator();
+		while(queryIter.hasNext()){
+			XDI3Segment query = queryIter.next();
+			GetOperation getOp = message.createGetOperation(query);
+			if (isDeref) {
+				getOp.setParameter(XDI3SubSegment.create("$deref"), "true");
+			}
+		}
+		message.createGetOperation(queryStmts.iterator());
+		// System.out.println("Message :\n" + messageEnvelope + "\n");
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// send the message
+
+		MessageResult messageResult = null;
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			MemoryGraph response = (MemoryGraph) messageResult.getGraph();
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(response,
+					System.out);
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
+		}
+		return messageResult;
+	}
 
 	public MessageResult getXDIStmts(XDI3Segment query, boolean isDeref) {
 
@@ -619,6 +681,7 @@ public class PersonalCloud {
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 
+		
 		GetOperation getOp = message.createGetOperation(query);
 		if (isDeref) {
 			getOp.setParameter(XDI3SubSegment.create("$deref"), "true");
@@ -1915,6 +1978,137 @@ public class PersonalCloud {
 
 	public String getSessionId() {
 		return sessionId;
+	}
+	/*
+		{
+		 "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9{$from}[$do]!:uuid:11c43ab0-6ce5-4084-b1bc-9f4a07a27328/$get": [
+		"{$to}<+email>",
+		"{$to}<+name>"
+		 ],
+		 "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9{$from}[$do]!:uuid:11c43ab0-6ce5-4084-b1bc-9f4a07a27328$if$and/$true": [
+		{
+		  "{$from}/$is": [
+		    "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9"
+		  ],
+		     "{$msg}<$sig><$valid>&/&": true
+		   }
+		 ],
+		 "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9{$from}[$do]!:uuid:11c43ab0-6ce5-4084-b1bc-9f4a07a27328<$sig>/$is+": [
+		   "$sha$256$rsa$2048"
+		 ],
+		 "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9{$from}[$do]!:uuid:11c43ab0-6ce5-4084-b1bc-9f4a07a27328<$sig>&/&": "..."
+		}
+	 */
+	
+	public String showAuthenticationForm(String respectConnectRequest , String respondingPartyCloudName , String respondingPartyCloudNumber){
+		
+		String result = null;
+		
+		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
+		String templateOwnerInumber = null;
+		try {
+			Graph g = graphFactory.parseGraph(respectConnectRequest);
+			//get remote cloud number 
+			
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(g,
+					System.out);
+			ContextNode c = g.getRootContextNode();
+			ReadOnlyIterator<ContextNode> allCNodes = c.getAllContextNodes();
+			for(ContextNode ci : allCNodes){
+				if(ci.containsContextNode(XDI3SubSegment.create("[$msg]"))){								
+					templateOwnerInumber = ci.toString(); //.substring(0, ci.toString().length()-new String("{$from}").length());
+					System.out.println(templateOwnerInumber);
+					break;
+				}
+			}
+			if (templateOwnerInumber == null){
+				System.out.println("No cloudnumber for requestor/template owner");
+				return result;
+			}
+			//get the address of the link contract template
+			//$set{$do}
+			
+			String lcTemplateAddress = null;
+			
+			ReadOnlyIterator<Relation> allRelations = c.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for(Relation r : allRelations){
+				if(r.getArcXri().toString().equals("$set{$do}")){
+					lcTemplateAddress = r.getTargetContextNodeXri().toString();
+					System.out.println(r.getTargetContextNodeXri());
+				}
+				
+			}
+			if (lcTemplateAddress == null){
+				System.out.println("No LC template address provided");
+				return result;
+			}
+			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
+			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
+			querySegments.add(XDI3Segment.create(templateOwnerInumber + "<+name>"));
+			querySegments.add(XDI3Segment.create(lcTemplateAddress));
+			ArrayList<XDI3Statement> queryStmts = new ArrayList<XDI3Statement>();
+			queryStmts.add(XDI3Statement.create(templateOwnerInumber + "/$is$ref/{}"));
+			MessageResult responseFromRemoteCloud = remoteCloud.sendQueries(querySegments, queryStmts,false);
+
+			Graph responseGraph = responseFromRemoteCloud.getGraph();
+			ContextNode responseRootContext = responseGraph.getRootContextNode();
+			//get requested data fields
+			
+			ArrayList<XDI3Segment> getDataFields = new ArrayList<XDI3Segment>();
+			
+			ReadOnlyIterator<Relation> getRelations = responseRootContext.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for(Relation r : getRelations){
+				if(r.getArcXri().toString().equals("$get")){
+					getDataFields.add(r.getTargetContextNodeXri());
+					System.out.println(r.getTargetContextNodeXri());
+				}
+				
+			}
+			
+			Literal requestingPartyNameLit = responseRootContext.getDeepLiteral(XDI3Segment.create(templateOwnerInumber + "<+name>&"));
+			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
+			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
+			
+			//prepare LC Approval HTML
+			
+			StringBuffer buf = new StringBuffer();
+			
+			buf.append("<html>");
+			buf.append("<p>Hello");
+			buf.append(respondingPartyCloudName);
+			buf.append(", welcome to your Connect Service.</p");
+			buf.append("<p>Please authenticate:</p>");
+			buf.append("<form action=\"http://mycloud.neustar.biz/");
+			buf.append(respondingPartyCloudNumber);
+			buf.append("/connect/request\" method=\"post\">");
+			buf.append("<input type=\"hidden\" name=\"lcTemplateAddress\" value=\"");
+			buf.append(lcTemplateAddress);
+			buf.append("\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"relyingParty\" value=\"");
+			buf.append(templateOwnerInumber);
+			buf.append("\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("</input>");
+			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
+			buf.append("<input type=\"submit\" value=\"Authenticate!\"/>");
+			buf.append("</form>");
+			buf.append("</html>");
+			
+			result = buf.toString();
+			
+		} catch (Xdi2ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+		
 	}
 
 }

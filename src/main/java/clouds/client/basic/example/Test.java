@@ -1,5 +1,12 @@
 package clouds.client.basic.example;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import xdi2.core.Graph;
@@ -284,8 +291,31 @@ public class Test {
 //		
 //		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
 		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
-		pc.getDataBucket("work");
+		//pc.getDataBucket("work");
+		String respectConnectRequest = new String();
 		
+		FileInputStream fin = null;
+		try {
+			fin = new FileInputStream(args[0]);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DataInputStream din  = new DataInputStream(fin);
+	     BufferedReader d
+         = new BufferedReader(new InputStreamReader(din));
+
+		try {
+			String line ;
+			while((line = d.readLine()) != null){
+				respectConnectRequest += line;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		pc.showAuthenticationForm(respectConnectRequest, "=alice","[=]!:uuid:0f8362b1-044f-2813-0f83-62b1044f2813");
 		
 	}
 }
