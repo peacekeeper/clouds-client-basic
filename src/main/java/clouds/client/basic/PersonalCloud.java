@@ -2087,7 +2087,7 @@ public class PersonalCloud {
 			//buf.append("<form action=\"http://mycloud.neustar.biz:8080/myapp/personalclouds/");
 			buf.append("<form action=\"" + WEBAPP_BASE_URI );
 			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
-			buf.append("/connect/authorize\" method=\"post\">");
+			buf.append("/connect/authorize/\" method=\"post\">");
 //			buf.append("<input type=\"hidden\" name=\"lcTemplateAddress\" value=\"");
 //			buf.append(lcTemplateAddress);
 //			buf.append("\">");
@@ -2240,7 +2240,7 @@ public class PersonalCloud {
 			buf.append("<p>Please approve the link contract:</p>");
 			buf.append("<form action=\"" + WEBAPP_BASE_URI );
 			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
-			buf.append("/connect/approve\" method=\"post\">");
+			buf.append("/connect/approve/\" method=\"post\">");
 
 			for(Literal lit : allLiteralsFromResponse){
 				String str = new String("<input type=\"checkbox\" name=\"") + "fieldchoices"  + "\""; 
@@ -2256,7 +2256,9 @@ public class PersonalCloud {
 			buf.append(authToken);
 			buf.append("\">");
 			buf.append("</input>");
-
+			buf.append("<input type=\"hidden\" name=\"linkContractInstance\" value=\'"); 
+			buf.append("\'{TBD LINK CONTRACT INSTANCE}\'");
+			buf.append("\'>");
 			buf.append("<input type=\"submit\" value=\"Approve!\"");
 			buf.append("<input type=\"submit\" value=\"Reject!\"");
 			buf.append("</form>");
