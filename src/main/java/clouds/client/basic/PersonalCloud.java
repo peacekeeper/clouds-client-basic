@@ -113,18 +113,18 @@ public class PersonalCloud {
 		// System.out.println(pc.toString());
 		// pc.getProfileInfo();
 		//pc.createDefaultLinkContracts();
-		if (session == null || session.isEmpty()) {
-			String sessionId = pc.cloudNumber + "[+session]" + "!:uuid:"
-					+ UUID.randomUUID().toString() ;
-			long sessionValidityPeriod = Calendar.getInstance().getTimeInMillis() + 86400*1000;
-			String expirationDate = sessionId + "$not$valid$after<$t>&/&/"
-					+ sessionValidityPeriod + "";
-			ArrayList<XDI3Statement> setSessionId = new ArrayList<XDI3Statement>();
-			setSessionId.add(XDI3Statement.create(expirationDate));
-			pc.setXDIStmts(setSessionId);
-		} else {
-			pc.sessionId = session;
-		}
+//		if (session == null || session.isEmpty()) {
+//			String sessionId = pc.cloudNumber + "[+session]" + "!:uuid:"
+//					+ UUID.randomUUID().toString() ;
+//			long sessionValidityPeriod = Calendar.getInstance().getTimeInMillis() + 86400*1000;
+//			String expirationDate = sessionId + "$not$valid$after<$t>&/&/"
+//					+ sessionValidityPeriod + "";
+//			ArrayList<XDI3Statement> setSessionId = new ArrayList<XDI3Statement>();
+//			setSessionId.add(XDI3Statement.create(expirationDate));
+//			pc.setXDIStmts(setSessionId);
+//		} else {
+//			pc.sessionId = session;
+//		}
 		return pc;
 	}
 	public static PersonalCloud open(XDI3Segment cloudNameOrCloudNumber,
@@ -2310,8 +2310,8 @@ public class PersonalCloud {
 			System.out.println("Set statements :" + stmt);
 			setStatements.add(XDI3Statement.create(stmt));	
 		}
-		MessageResult setResponse = this.setXDIStmts(setStatements);
-		System.out.println("Set response : " + setResponse);
+//		MessageResult setResponse = this.setXDIStmts(setStatements);
+//		System.out.println("Set response : " + setResponse);
 		
 		//send link contract to the relying party
 		//{$from}[@]!:uuid:1+registration$do
