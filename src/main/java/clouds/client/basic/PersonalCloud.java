@@ -2100,9 +2100,9 @@ public class PersonalCloud {
 			buf.append("</input>");
 			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
 			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'"); 
+			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\""); 
 			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
-			buf.append("\'>");
+			buf.append("\">");
 			buf.append("</input>");
 			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
 			buf.append("<input type=\"submit\" value=\"Authenticate!\"/>");
@@ -2122,9 +2122,17 @@ public class PersonalCloud {
 		return result;
 		
 	}
-	public String showApprovalForm(String connectRequest, String respondingPartyCloudNumber , String authToken){
+	public String showApprovalForm(String connectRequestEncoded, String respondingPartyCloudNumberEncoded , String authToken){
 		String result = null;
 		
+		String connectRequest = null , respondingPartyCloudNumber = null;
+		try {
+			connectRequest = URLDecoder.decode(connectRequestEncoded, "UTF-8");
+			respondingPartyCloudNumber = URLDecoder.decode(respondingPartyCloudNumberEncoded, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		System.out.println("Connect Request :\n" + connectRequest);
 		
 		System.out.println("respondingPartyCloudNumber : \n" + respondingPartyCloudNumber );
