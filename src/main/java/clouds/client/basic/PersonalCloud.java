@@ -2077,7 +2077,9 @@ public class PersonalCloud {
 			
 			StringBuffer buf = new StringBuffer();
 			
-			buf.append("<html>");
+			
+			buf.append("<html><head></head><div id=\"authn_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
+			buf.append("<body>");
 			buf.append("<p>Hello : ");
 			buf.append(respondingPartyCloudName);
 			buf.append(", welcome to your Connect Service.</p>");
@@ -2107,6 +2109,8 @@ public class PersonalCloud {
 			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
 			buf.append("<input type=\"submit\" value=\"Authenticate!\"/>");
 			buf.append("</form>");
+			buf.append("</div>");
+			buf.append("</body>");
 			buf.append("</html>");
 			
 			result = buf.toString();
@@ -2224,7 +2228,8 @@ public class PersonalCloud {
 			//prepare authorization input HTML
 			
 			StringBuffer buf = new StringBuffer();
-			buf.append("<html>");
+			buf.append("<html><head></head><div id=\"authz_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
+			buf.append("<body>");
 			buf.append("<p>Link Contract Authorization Form</p>");
 			buf.append("<p>");
 			buf.append(requestingPartyNameLit.getLiteralDataString() + "(Cloud Name: " + requestingPartyCloudNumberCtx + " is offering to connect to your Cloud via Respect Connect.</p>");
@@ -2250,6 +2255,8 @@ public class PersonalCloud {
 			buf.append("<input type=\"submit\" value=\"Approve!\"");
 			buf.append("<input type=\"submit\" value=\"Reject!\"");
 			buf.append("</form>");
+			buf.append("</div>");
+			buf.append("</body>");
 			buf.append("</html>");
 			
 			result = buf.toString();
