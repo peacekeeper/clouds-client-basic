@@ -315,9 +315,11 @@ public class Test {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 
-		pc.showAuthenticationForm(respectConnectRequest, "=alice","[=]!:uuid:0f8362b1-044f-2813-0f83-62b1044f2813");
-		pc.showApprovalForm(respectConnectRequest, "[=]!:uuid:0f8362b1-044f-2813-0f83-62b1044f2813", "alice");
+		String [] checkedValues = new String[1];
+		checkedValues[0] = new String("[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610<+email>&|demo2@newdemoland.com");
+		pc.processApprovalForm("DO NOT KNOW YET", "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9", "[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610", "demo2", checkedValues) ;
+		pc.showAuthenticationForm(respectConnectRequest, "=demo2","[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610");
+		pc.showApprovalForm(respectConnectRequest, "[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610", "demo2");
 		
 	}
 }

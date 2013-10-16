@@ -10,6 +10,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.UUID;
 
+import com.ibm.icu.util.StringTokenizer;
+
 import xdi2.client.XDIClient;
 import xdi2.client.exceptions.Xdi2ClientException;
 import xdi2.client.http.XDIHttpClient;
@@ -2259,6 +2261,9 @@ public class PersonalCloud {
 			buf.append("<input type=\"hidden\" name=\"linkContractInstance\" value=\'"); 
 			buf.append("{TBD LINK CONTRACT INSTANCE}");
 			buf.append("\'>");
+			buf.append("<input type=\"hidden\" name=\"relyingPartyCloudNumber\" value=\'"); 
+			buf.append(templateOwnerInumber);
+			buf.append("\'>");
 			buf.append("<input type=\"submit\" value=\"Approve!\"/>");
 			buf.append("<input type=\"submit\" value=\"Reject!\"/>");
 			buf.append("</form>");
@@ -2278,9 +2283,38 @@ public class PersonalCloud {
 		System.out.println("Result HTML:\n" + result);
 		return result;
 	}
-	public String processApprovalForm(String linkContractInstance, String respondingPartyCloudNumber, String secrettoken,String [] selectedValues){
+	public String processApprovalForm(String linkContractInstance, String relyingPartyCloudNumber , String respondingPartyCloudNumber, String secrettoken,String [] selectedValues){
 	
 		String result = new String();
+		//create a link contract instance
+		/*
+		 * [=]!:uuid:2$to[@]!:uuid:1$from[@]!:uuid:1+registration$do/$get/[=]!:uuid:2<+tel>
+		 * <<respondingPartyCloudNumber>>$to<<templateOwnerInumber>>$from<<templateOwnerInumber>>+registration$do/$get/<<data element address>>
+		 */
+		ArrayList<XDI3Statement> setStatements = new ArrayList<XDI3Statement>();
+		for(int i = 0 ; i < selectedValues.length ; i++){
+			String value = selectedValues[i];
+			StringTokenizer st = new StringTokenizer(value,"|");
+			String addressPart = st.nextToken();
+			String stmt = new String("(");
+			stmt += respondingPartyCloudNumber;
+			stmt += "$to";
+			stmt += relyingPartyCloudNumber;
+			stmt += "$from";
+			stmt += relyingPartyCloudNumber;
+			stmt += "+registration$do/$get/";
+			stmt += addressPart;
+			stmt += ")";
+			System.out.println("Set statements :" + stmt);
+			setStatements.add(XDI3Statement.create(stmt));	
+		}
+		this.setXDIStmts(setStatements);
+		
+		//send link contract to the relying party
+		//{$from}[@]!:uuid:1+registration$do
+//		String lcAddress = relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
+//		PersonalCloud relyingPartyPC = PersonalCloud.open(XDI3Segment.create(relyingPartyCloudNumber), this.senderCloudNumber, XDI3Segment.create("lcAddress"), "");
+//		relyingPartyPC.setXDIStmts(setStatements);
 		
 		StringBuffer buf = new StringBuffer();
 		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
