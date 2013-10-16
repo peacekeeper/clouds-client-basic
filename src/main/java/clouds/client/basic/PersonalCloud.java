@@ -2102,9 +2102,13 @@ public class PersonalCloud {
 			buf.append("</input>");
 			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
 			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\""); 
+//			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\""); 
+//			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
+//			buf.append("\">");
+			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'"); 
 			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
-			buf.append("\">");
+			buf.append("\'>");
+
 			buf.append("</input>");
 			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
 			buf.append("<input type=\"submit\" value=\"Authenticate!\"/>");
