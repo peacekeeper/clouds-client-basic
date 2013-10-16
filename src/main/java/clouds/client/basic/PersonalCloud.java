@@ -2298,7 +2298,7 @@ public class PersonalCloud {
 			String addressPart = st.nextToken();
 			//strip the last & off
 			addressPart = addressPart.substring(0, addressPart.length() -1);
-			String stmt = new String("(");
+			String stmt = new String();
 			stmt += respondingPartyCloudNumber;
 			stmt += "$to";
 			stmt += relyingPartyCloudNumber;
@@ -2306,12 +2306,12 @@ public class PersonalCloud {
 			stmt += relyingPartyCloudNumber;
 			stmt += "+registration$do/$get/";
 			stmt += addressPart;
-			stmt += ")";
+			
 			System.out.println("Set statements :" + stmt);
 			setStatements.add(XDI3Statement.create(stmt));	
 		}
-//		MessageResult setResponse = this.setXDIStmts(setStatements);
-//		System.out.println("Set response : " + setResponse);
+		MessageResult setResponse = this.setXDIStmts(setStatements);
+		System.out.println("Set response : " + setResponse);
 		
 		//send link contract to the relying party
 		//{$from}[@]!:uuid:1+registration$do
