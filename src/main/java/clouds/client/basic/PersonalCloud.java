@@ -2081,7 +2081,7 @@ public class PersonalCloud {
 			buf.append(respondingPartyCloudName);
 			buf.append(", welcome to your Connect Service.</p>");
 			buf.append("<p>Please authenticate:</p>");
-			buf.append("<form action=\"http://mycloud.neustar.biz:8080/");
+			buf.append("<form action=\"http://mycloud.neustar.biz:8080/myapp/personalclouds/");
 			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
 			buf.append("/connect/authorize\" method=\"post\">");
 //			buf.append("<input type=\"hidden\" name=\"lcTemplateAddress\" value=\"");
@@ -2219,7 +2219,7 @@ public class PersonalCloud {
 			buf.append("<p>");
 			buf.append(requestingPartyNameLit.getLiteralDataString() + "(Cloud Name: " + requestingPartyCloudNumberCtx + " is offering to connect to your Cloud via Respect Connect.</p>");
 			buf.append("<p>Please approve the link contract:</p>");
-			buf.append("<form action=\"http://mycloud.neustar.biz:8080/");
+			buf.append("<form action=\"http://mycloud.neustar.biz:8080/myapp/personalclouds/");
 			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
 			buf.append("/connect/approve\" method=\"post\">");
 
