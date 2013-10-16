@@ -2106,7 +2106,7 @@ public class PersonalCloud {
 //			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
 //			buf.append("\">");
 			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'"); 
-			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
+			buf.append(respectConnectRequest);
 			buf.append("\'>");
 
 			buf.append("</input>");
@@ -2236,17 +2236,17 @@ public class PersonalCloud {
 			buf.append("<body>");
 			buf.append("<p>Link Contract Authorization Form</p>");
 			buf.append("<p>");
-			buf.append(requestingPartyNameLit.getLiteralDataString() + "(Cloud Name: " + requestingPartyCloudNumberCtx + " is offering to connect to your Cloud via Respect Connect.</p>");
+			buf.append(requestingPartyNameLit.getLiteralDataString() + "(Cloud Name: " + requestingPartyCloudNumberCtx + ") is offering to connect to your Cloud via Respect Connect.</p>");
 			buf.append("<p>Please approve the link contract:</p>");
 			buf.append("<form action=\"" + WEBAPP_BASE_URI );
 			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
 			buf.append("/connect/approve\" method=\"post\">");
 
 			for(Literal lit : allLiteralsFromResponse){
-				String str = new String("<input type=\"checkbox\" name=\"") + lit.getContextNode().toString()  + "\""; 
+				String str = new String("<input type=\"checkbox\" name=\"") + "fieldchoices"  + "\""; 
 				str +=	" value=\'";
 				//str += URLEncoder.encode(lit.getLiteralDataString(),"UTF-8");
-				str += lit.getLiteralDataString();
+				str += lit.getContextNode().toString() + "|" + lit.getLiteralDataString();
 				str += "\'>";
 				str += lit.getLiteralDataString();
 				str += "</input>";
@@ -2274,6 +2274,25 @@ public class PersonalCloud {
 			e.printStackTrace();
 		}
 		System.out.println("Result HTML:\n" + result);
+		return result;
+	}
+	public String processApprovalForm(String linkContractInstance, String respondingPartyCloudNumber, String secrettoken,String [] selectedValues){
+	
+		String result = new String();
+		
+		StringBuffer buf = new StringBuffer();
+		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
+		buf.append("<body>");
+		buf.append("<p>Link Contract Authorization Form</p>");
+		buf.append("<p>");
+		for(int i = 0 ; i < selectedValues.length ; i++){
+			buf.append(selectedValues[i] + "<br>");	
+		}
+		buf.append("</div>");
+		buf.append("</body>");
+		buf.append("</html>");
+		
+		result = buf.toString();
 		return result;
 	}
 
