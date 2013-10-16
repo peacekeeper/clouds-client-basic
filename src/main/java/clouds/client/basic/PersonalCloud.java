@@ -2135,7 +2135,7 @@ public class PersonalCloud {
 		
 		String connectRequest = null , respondingPartyCloudNumber = null;
 		try {
-			connectRequest = URLDecoder.decode(connectRequestEncoded, "UTF-8");
+			connectRequest = connectRequestEncoded ; //URLDecoder.decode(connectRequestEncoded, "UTF-8");
 			respondingPartyCloudNumber = URLDecoder.decode(respondingPartyCloudNumberEncoded, "UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
@@ -2257,7 +2257,7 @@ public class PersonalCloud {
 			buf.append("\">");
 			buf.append("</input>");
 			buf.append("<input type=\"hidden\" name=\"linkContractInstance\" value=\'"); 
-			buf.append("\'{TBD LINK CONTRACT INSTANCE}\'");
+			buf.append("{TBD LINK CONTRACT INSTANCE}");
 			buf.append("\'>");
 			buf.append("<input type=\"submit\" value=\"Approve!\"");
 			buf.append("<input type=\"submit\" value=\"Reject!\"");
