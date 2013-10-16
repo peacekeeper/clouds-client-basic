@@ -2122,6 +2122,12 @@ public class PersonalCloud {
 	}
 	public String showApprovalForm(String connectRequest, String respondingPartyCloudNumber , String authToken){
 		String result = null;
+		
+		System.out.println("Connect Request :\n" + connectRequest);
+		
+		System.out.println("respondingPartyCloudNumber : \n" + respondingPartyCloudNumber );
+
+		System.out.println("Auth Token : \n" + authToken );
 		this.secretToken = authToken;
 		this.linkContractAddress = PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT;
 		this.cloudNumber = XDI3Segment.create(respondingPartyCloudNumber);
@@ -2245,6 +2251,7 @@ public class PersonalCloud {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("Result HTML:\n" + result);
 		return result;
 	}
 

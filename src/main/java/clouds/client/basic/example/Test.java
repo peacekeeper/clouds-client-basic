@@ -291,7 +291,7 @@ public class Test {
 //		
 //		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
 		//PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
-		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"),XDI3Segment.create("$anon"),XDI3Segment.create("$public$do"),"");
+		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"),"demo2",XDI3Segment.create("$do"),"");
 		//pc.getDataBucket("work");
 		String respectConnectRequest = new String();
 		
@@ -317,7 +317,7 @@ public class Test {
 		}
 		 
 		pc.showAuthenticationForm(respectConnectRequest, "=alice","[=]!:uuid:0f8362b1-044f-2813-0f83-62b1044f2813");
-		pc.showApprovalForm(respectConnectRequest, "[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610", "demo2");
+		pc.showApprovalForm(respectConnectRequest, "[=]!:uuid:0f8362b1-044f-2813-0f83-62b1044f2813", "alice");
 		
 	}
 }
