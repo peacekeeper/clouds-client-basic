@@ -2101,7 +2101,7 @@ public class PersonalCloud {
 			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
 			buf.append("</input>");
 			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'"); 
-			buf.append(respectConnectRequest);
+			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
 			buf.append("\'>");
 			buf.append("</input>");
 			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
@@ -2226,9 +2226,9 @@ public class PersonalCloud {
 			buf.append("/connect/approve\" method=\"post\">");
 
 			for(Literal lit : allLiteralsFromResponse){
-				String str = new String("<input type=\"checkbox\" name=\"") + lit.getContextNode().toString()  + "\""; 
+				String str = new String("<input type=\"checkbox\" name=\"") + URLEncoder.encode(lit.getContextNode().toString(),"UTF-8")  + "\""; 
 				str +=	"\" value=\"";
-				str += lit.getLiteralDataString();
+				str += URLEncoder.encode(lit.getLiteralDataString(),"UTF-8");
 				str += "\">";
 				str += lit.getLiteralDataString();
 				str += "</input>";
