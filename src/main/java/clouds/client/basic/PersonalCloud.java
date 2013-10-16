@@ -2004,7 +2004,7 @@ public class PersonalCloud {
 		}
 	 */
 	
-	public String showAuthenticationForm(String respectConnectRequest , String respondingPartyCloudName , String respondingPartyCloudNumber){
+	public String showAuthenticationForm(String respectConnectRequest , String respondingPartyCloudName , String respondingPartyCloudNumber, String successurl , String failureurl, String relayState){
 		
 		String result = null;
 		System.out.println("Connect Request :\n" + respectConnectRequest);
@@ -2080,7 +2080,7 @@ public class PersonalCloud {
 			StringBuffer buf = new StringBuffer();
 			
 			
-			buf.append("<html><head></head><div id=\"authn_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
+			buf.append("<html><head></head><div id=\"authn_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
 			buf.append("<body>");
 			buf.append("<p>Hello : ");
 			buf.append(respondingPartyCloudName);
@@ -2098,11 +2098,13 @@ public class PersonalCloud {
 //			buf.append(templateOwnerInumber);
 //			buf.append("\">");
 //			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"" + successurl + "\">");
 			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\"" + failureurl+ "\">");
 			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"http://acme.respectnetwork.net/demo-acme-site/acs\">");
+			buf.append("<input type=\"hidden\" name=\"cloudname\" value=\"" + respondingPartyCloudName+ "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"relayState\" value=\"" + relayState+ "\">");
 			buf.append("</input>");
 //			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\""); 
 //			buf.append(URLEncoder.encode(respectConnectRequest,"UTF-8"));
@@ -2132,7 +2134,7 @@ public class PersonalCloud {
 		return result;
 		
 	}
-	public String showApprovalForm(String connectRequestEncoded, String respondingPartyCloudNumberEncoded , String authToken){
+	public String showApprovalForm(String connectRequestEncoded, String respondingPartyCloudNumberEncoded , String authToken, String successurl , String failureurl , String cloudname, String relayState){
 		String result = null;
 		
 		String connectRequest = null , respondingPartyCloudNumber = null;
@@ -2234,7 +2236,7 @@ public class PersonalCloud {
 			//prepare authorization input HTML
 			
 			StringBuffer buf = new StringBuffer();
-			buf.append("<html><head></head><div id=\"authz_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
+			buf.append("<html><head></head><div id=\"authz_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
 			buf.append("<body>");
 			buf.append("<p>Link Contract Authorization Form</p>");
 			buf.append("<p>");
@@ -2264,6 +2266,14 @@ public class PersonalCloud {
 			buf.append("<input type=\"hidden\" name=\"relyingPartyCloudNumber\" value=\'"); 
 			buf.append(templateOwnerInumber);
 			buf.append("\'>");
+			buf.append("<input type=\"hidden\" name=\"successurl\" value=\"" + successurl + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\"" + failureurl+ "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"cloudname\" value=\"" + cloudname+ "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"relayState\" value=\"" + relayState+ "\">");
+			buf.append("</input>");
 			buf.append("<input type=\"submit\" value=\"Approve!\"/>");
 			buf.append("<input type=\"submit\" value=\"Reject!\"/>");
 			buf.append("</form>");
@@ -2283,7 +2293,7 @@ public class PersonalCloud {
 		System.out.println("Result HTML:\n" + result);
 		return result;
 	}
-	public String processApprovalForm(String linkContractInstance, String relyingPartyCloudNumber , String respondingPartyCloudNumber, String secrettoken,String [] selectedValues){
+	public String processApprovalForm(String linkContractInstance, String relyingPartyCloudNumber , String respondingPartyCloudNumber, String secrettoken,String [] selectedValues, String successurl , String failureurl, String cloudname , String relayState){
 	
 		String result = new String();
 		//create a link contract instance
@@ -2315,18 +2325,35 @@ public class PersonalCloud {
 		
 		//send link contract to the relying party
 		//{$from}[@]!:uuid:1+registration$do
-//		String lcAddress = relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
+		String lcAddress = relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
 //		PersonalCloud relyingPartyPC = PersonalCloud.open(XDI3Segment.create(relyingPartyCloudNumber), this.senderCloudNumber, XDI3Segment.create("lcAddress"), "");
 //		relyingPartyPC.setXDIStmts(setStatements);
 		
 		StringBuffer buf = new StringBuffer();
-		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 764px; z-index: 1000;display: block;\">");
-		buf.append("<body>");
-		buf.append("<p>Link Contract Authorization Form</p>");
+		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
+		buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
+		buf.append("function submitForm() { document.forms['connectResponse'].submit(); }");
+		buf.append("</SCRIPT>");
+		buf.append("<body onload=\"submitForm()\">");
+		buf.append("<p>Hello <b>" + cloudname +"</b>. Welcome back!");
+		buf.append("<p>New Link Contracts have been established successfully!");
 		buf.append("<p>");
-		for(int i = 0 ; i < selectedValues.length ; i++){
-			buf.append(selectedValues[i] + "<br>");	
-		}
+//		for(int i = 0 ; i < selectedValues.length ; i++){
+//			buf.append(selectedValues[i] + "<br>");	
+//		}
+		buf.append("<form action=\"" + successurl + "\" method=\"post\" name=\"connectResponse\">" );
+		buf.append("<input type=\"hidden\" name=\"cloudname\" value=\"" + cloudname+ "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"relayState\" value=\"" + relayState+ "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"cloudnumber\" value=\"" + respondingPartyCloudNumber+ "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"endpointuri\" value=\"" + this.cloudEndpointURI+ "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"linkcontractinstance\" value=\"" + lcAddress+ "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
+		buf.append("</form>");
 		buf.append("</div>");
 		buf.append("</body>");
 		buf.append("</html>");
