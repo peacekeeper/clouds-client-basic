@@ -2243,10 +2243,11 @@ public class PersonalCloud {
 			buf.append("/connect/approve\" method=\"post\">");
 
 			for(Literal lit : allLiteralsFromResponse){
-				String str = new String("<input type=\"checkbox\" name=\"") + URLEncoder.encode(lit.getContextNode().toString(),"UTF-8")  + "\""; 
-				str +=	"\" value=\"";
-				str += URLEncoder.encode(lit.getLiteralDataString(),"UTF-8");
-				str += "\">";
+				String str = new String("<input type=\"checkbox\" name=\"") + lit.getContextNode().toString()  + "\""; 
+				str +=	" value=\'";
+				//str += URLEncoder.encode(lit.getLiteralDataString(),"UTF-8");
+				str += lit.getLiteralDataString();
+				str += "\'>";
 				str += lit.getLiteralDataString();
 				str += "</input>";
 				buf.append(str);
