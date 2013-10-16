@@ -2259,8 +2259,8 @@ public class PersonalCloud {
 			buf.append("<input type=\"hidden\" name=\"linkContractInstance\" value=\'"); 
 			buf.append("{TBD LINK CONTRACT INSTANCE}");
 			buf.append("\'>");
-			buf.append("<input type=\"submit\" value=\"Approve!\"");
-			buf.append("<input type=\"submit\" value=\"Reject!\"");
+			buf.append("<input type=\"submit\" value=\"Approve!\"/>");
+			buf.append("<input type=\"submit\" value=\"Reject!\"/>");
 			buf.append("</form>");
 			buf.append("</div>");
 			buf.append("</body>");
