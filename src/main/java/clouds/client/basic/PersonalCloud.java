@@ -2447,7 +2447,7 @@ public class PersonalCloud {
 		buf.append("</input>");
 		buf.append("<input type=\"hidden\" name=\"endpointuri\" value=\"" + this.cloudEndpointURI+ "\">");
 		buf.append("</input>");
-		buf.append("<input type=\"hidden\" name=\"linkcontractinstance\" value=\"" + targetSegment + "\">");
+		buf.append("<input type=\"hidden\" name=\"xdiresponse\" value=\'" + targetSegment + "/$is+/" +linkContractTemplateAddress+ "\'>");
 		buf.append("</input>");
 		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
 		buf.append("</form>");
