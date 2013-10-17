@@ -732,7 +732,7 @@ public class PersonalCloud {
 				getOp.setParameter(XDI3SubSegment.create("$deref"), "true");
 			}
 		}
-		if (queryStmts.size() > 0) {
+		if (queryStmts!= null && queryStmts.size() > 0) {
 			message.createGetOperation(queryStmts.iterator());
 		}
 
@@ -2635,6 +2635,183 @@ public class PersonalCloud {
 		result = buf.toString();
 		System.out.println("Result HTML : \n" + result);
 		return result;
+	}
+	public boolean linkContractExists(String connectRequest){
+		boolean result = false;
+		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
+		String templateOwnerInumber = null;
+		try {
+			Graph g = graphFactory.parseGraph(connectRequest);
+			// get remote cloud number
+
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(g,
+					System.out);
+			ContextNode c = g.getRootContextNode();
+			ReadOnlyIterator<ContextNode> allCNodes = c.getAllContextNodes();
+			for (ContextNode ci : allCNodes) {
+				if (ci.containsContextNode(XDI3SubSegment.create("[$msg]"))) {
+					templateOwnerInumber = ci.toString();
+					System.out.println(templateOwnerInumber);
+					break;
+				}
+			}
+			if (templateOwnerInumber == null) {
+				System.out
+						.println("No cloudnumber for requestor/template owner");
+				return result;
+			}
+			// get the address of the link contract template
+			// $set{$do}
+
+			String lcTemplateAddress = null;
+
+			ReadOnlyIterator<Relation> allRelations = c.getAllRelations(); // g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for (Relation r : allRelations) {
+				if (r.getArcXri().toString().equals("$set{$do}")) {
+					lcTemplateAddress = r.getTargetContextNodeXri().toString();
+					System.out.println(r.getTargetContextNodeXri());
+				}
+
+			}
+			if (lcTemplateAddress == null) {
+				System.out.println("No LC template address provided");
+				return result;
+			}
+		}catch(Exception io){
+			io.printStackTrace();
+			return result;
+		}
+		
+		String isPlusstmt = new String();
+		isPlusstmt += this.cloudNumber;
+		isPlusstmt += "$to";
+		isPlusstmt += templateOwnerInumber;
+		isPlusstmt += "$from";
+		isPlusstmt += templateOwnerInumber;
+		isPlusstmt += "+registration$do";
+		
+		ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
+		
+
+		querySegments.add(XDI3Segment.create(isPlusstmt));
+		
+		MessageResult responseFromRemoteCloud = this.sendQueries(
+				querySegments, null, false);
+
+		Graph responseGraph = responseFromRemoteCloud.getGraph();
+		ContextNode responseRootContext = responseGraph
+				.getRootContextNode();
+		if(responseRootContext != null){
+			result = true;
+		}
+		
+		return result;
+	}
+	public String autoSubmitForm(String cloudname , String connectRequest, String successurl , String relayState){
+		String result = new String("");
+		
+		
+		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
+		String templateOwnerInumber = null;
+		String lcTemplateAddress = null;
+		try {
+			Graph g = graphFactory.parseGraph(connectRequest);
+			// get remote cloud number
+
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(g,
+					System.out);
+			ContextNode c = g.getRootContextNode();
+			ReadOnlyIterator<ContextNode> allCNodes = c.getAllContextNodes();
+			for (ContextNode ci : allCNodes) {
+				if (ci.containsContextNode(XDI3SubSegment.create("[$msg]"))) {
+					templateOwnerInumber = ci.toString();
+					System.out.println(templateOwnerInumber);
+					break;
+				}
+			}
+			if (templateOwnerInumber == null) {
+				System.out
+						.println("No cloudnumber for requestor/template owner");
+				return result;
+			}
+			// get the address of the link contract template
+			// $set{$do}
+
+			
+
+			ReadOnlyIterator<Relation> allRelations = c.getAllRelations(); // g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for (Relation r : allRelations) {
+				if (r.getArcXri().toString().equals("$set{$do}")) {
+					lcTemplateAddress = r.getTargetContextNodeXri().toString();
+					System.out.println(r.getTargetContextNodeXri());
+				}
+
+			}
+			if (lcTemplateAddress == null) {
+				System.out.println("No LC template address provided");
+				return result;
+			}
+		}catch(Exception io){
+			io.printStackTrace();
+			return result;
+		}
+
+		
+		String targetSegment = new String();
+		targetSegment += this.cloudNumber;
+		targetSegment += "$to";
+		targetSegment += templateOwnerInumber;
+		targetSegment += "$from";
+		targetSegment += templateOwnerInumber;
+		targetSegment += "+registration$do";
+		
+//		String linkContractTemplateAddress = new String("{$from}");
+//		linkContractTemplateAddress += templateOwnerInumber;
+//		linkContractTemplateAddress += "+registration$do";
+				
+		StringBuffer buf = new StringBuffer();
+		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
+		buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
+		buf.append("function submitForm() { document.forms['connectResponse'].submit(); }");
+		buf.append("</SCRIPT>");
+		buf.append("<body onload=\"submitForm()\">");
+		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
+		buf.append("<p>New Link Contracts have been established successfully!");
+		buf.append("<p>");
+		// for(int i = 0 ; i < selectedValues.length ; i++){
+		// buf.append(selectedValues[i] + "<br>");
+		// }
+		buf.append("<form action=\"" + successurl
+				+ "\" method=\"post\" name=\"connectResponse\">");
+		buf.append("<input type=\"hidden\" name=\"cloudname\" value=\""
+				+ cloudname + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"relayState\" value=\""
+				+ relayState + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"cloudnumber\" value=\""
+				+ this.cloudNumber + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"endpointuri\" value=\""
+				+ this.cloudEndpointURI + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"xdiresponse\" value=\'"
+				+ targetSegment + "/$is+/" + lcTemplateAddress
+				+ "\'>");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"statuscode\" value=\""
+				+ "@respect.network*connection.manager$success" + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
+		buf.append("</form>");
+		buf.append("</div>");
+		buf.append("</body>");
+		buf.append("</html>");
+
+		result = buf.toString();
+		System.out.println("Result HTML : \n" + result);
+		return result;
+
 	}
 
 }
