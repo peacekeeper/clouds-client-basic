@@ -2710,7 +2710,7 @@ public class PersonalCloud {
 		Graph responseGraph = responseFromRemoteCloud.getGraph();
 		ContextNode responseRootContext = responseGraph
 				.getRootContextNode();
-		if(responseRootContext != null){
+		if(responseRootContext.getContextNodeCount() > 1){
 			result = true;
 		}
 		
