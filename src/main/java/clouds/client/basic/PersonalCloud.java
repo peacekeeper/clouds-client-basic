@@ -521,6 +521,62 @@ public class PersonalCloud {
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
 		message.createSetOperation(XDIStmts.iterator());
+		
+
+		// System.out.println("Message :\n" + messageEnvelope + "\n");
+		try {
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+					messageEnvelope.getGraph(), System.out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// send the message
+
+		MessageResult messageResult = null;
+
+		try {
+
+			messageResult = xdiClient.send(messageEnvelope, null);
+			// System.out.println(messageResult);
+			try {
+				XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
+						messageResult.getGraph(), System.out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} catch (Xdi2ClientException ex) {
+
+			ex.printStackTrace();
+		} catch (Exception ex) {
+
+			ex.printStackTrace();
+		} finally {
+			xdiClient.close();
+		}
+		return messageResult;
+	}
+	public MessageResult setXDISegment(XDI3Segment targetSegment) {
+
+		// prepare XDI client
+
+		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
+
+		// prepare message envelope
+
+		MessageEnvelope messageEnvelope = new MessageEnvelope();
+		Message message = messageEnvelope.getMessage(cloudNumber, true);
+		message.setLinkContractXri(linkContractAddress);
+
+		message.setSecretToken(secretToken);
+
+		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+				.createPeerRootArcXri(cloudNumber)));
+		message.createSetOperation(targetSegment);
+		
 
 		// System.out.println("Message :\n" + messageEnvelope + "\n");
 		try {
@@ -2260,8 +2316,8 @@ public class PersonalCloud {
 			buf.append(authToken);
 			buf.append("\">");
 			buf.append("</input>");
-			buf.append("<input type=\"hidden\" name=\"linkContractInstance\" value=\'"); 
-			buf.append("{TBD LINK CONTRACT INSTANCE}");
+			buf.append("<input type=\"hidden\" name=\"linkContractTemplateAddress\" value=\'"); 
+			buf.append(lcTemplateAddress);
 			buf.append("\'>");
 			buf.append("<input type=\"hidden\" name=\"relyingPartyCloudNumber\" value=\'"); 
 			buf.append(templateOwnerInumber);
@@ -2293,7 +2349,7 @@ public class PersonalCloud {
 		System.out.println("Result HTML:\n" + result);
 		return result;
 	}
-	public String processApprovalForm(String linkContractInstance, String relyingPartyCloudNumber , String respondingPartyCloudNumber, String secrettoken,String [] selectedValues, String successurl , String failureurl, String cloudname , String relayState){
+	public String processApprovalForm(String linkContractTemplateAddress, String relyingPartyCloudNumber , String respondingPartyCloudNumber, String secrettoken,String [] selectedValues, String successurl , String failureurl, String cloudname , String relayState){
 	
 		String result = new String();
 		//create a link contract instance
@@ -2302,6 +2358,35 @@ public class PersonalCloud {
 		 * <<respondingPartyCloudNumber>>$to<<templateOwnerInumber>>$from<<templateOwnerInumber>>+registration$do/$get/<<data element address>>
 		 */
 		ArrayList<XDI3Statement> setStatements = new ArrayList<XDI3Statement>();
+		String isPlusstmt = new String();
+		isPlusstmt += respondingPartyCloudNumber;
+		isPlusstmt += "$to";
+		isPlusstmt += relyingPartyCloudNumber;
+		isPlusstmt += "$from";
+		isPlusstmt += relyingPartyCloudNumber;
+		isPlusstmt += "+registration$do/$is+/";
+		isPlusstmt += linkContractTemplateAddress;
+		
+		setStatements.add(XDI3Statement.create(isPlusstmt));
+		
+		String policyStmt = new String();
+		policyStmt += respondingPartyCloudNumber;
+		policyStmt += "$to";
+		policyStmt += relyingPartyCloudNumber;
+		policyStmt += "$from";
+		policyStmt += relyingPartyCloudNumber;
+		policyStmt += "+registration$do$if$and/$true/({$from}/$is/"+relyingPartyCloudNumber + ")";
+		setStatements.add(XDI3Statement.create(policyStmt));
+		
+		policyStmt = new String();
+		policyStmt += respondingPartyCloudNumber;
+		policyStmt += "$to";
+		policyStmt += relyingPartyCloudNumber;
+		policyStmt += "$from";
+		policyStmt += relyingPartyCloudNumber;
+		policyStmt += "+registration$do$if$and/$true/({$msg}<$sig><$valid>&/&/true)";
+		setStatements.add(XDI3Statement.create(policyStmt));
+		
 		for(int i = 0 ; i < selectedValues.length ; i++){
 			String value = selectedValues[i];
 			StringTokenizer st = new StringTokenizer(value,"|");
@@ -2323,11 +2408,23 @@ public class PersonalCloud {
 		MessageResult setResponse = this.setXDIStmts(setStatements);
 		System.out.println("Set response : " + setResponse);
 		
+		
+		
+		String targetSegment = new String();
+		targetSegment += respondingPartyCloudNumber;
+		targetSegment += "$to";
+		targetSegment += relyingPartyCloudNumber;
+		targetSegment += "$from";
+		targetSegment += relyingPartyCloudNumber;
+		targetSegment += "+registration$do";
+		
+		
 		//send link contract to the relying party
 		//{$from}[@]!:uuid:1+registration$do
-		String lcAddress = relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
-//		PersonalCloud relyingPartyPC = PersonalCloud.open(XDI3Segment.create(relyingPartyCloudNumber), this.senderCloudNumber, XDI3Segment.create("lcAddress"), "");
-//		relyingPartyPC.setXDIStmts(setStatements);
+		String lcAddress = "$to" + relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
+		PersonalCloud relyingPartyPC = PersonalCloud.open(XDI3Segment.create(relyingPartyCloudNumber), this.senderCloudNumber, XDI3Segment.create(lcAddress), "");
+		MessageResult setResponse2 = relyingPartyPC.setXDISegment(XDI3Segment.create(targetSegment));
+		System.out.println("Set response 2 : " + setResponse2);
 		
 		StringBuffer buf = new StringBuffer();
 		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
@@ -2350,7 +2447,7 @@ public class PersonalCloud {
 		buf.append("</input>");
 		buf.append("<input type=\"hidden\" name=\"endpointuri\" value=\"" + this.cloudEndpointURI+ "\">");
 		buf.append("</input>");
-		buf.append("<input type=\"hidden\" name=\"linkcontractinstance\" value=\"" + lcAddress+ "\">");
+		buf.append("<input type=\"hidden\" name=\"linkcontractinstance\" value=\"" + targetSegment + "\">");
 		buf.append("</input>");
 		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
 		buf.append("</form>");
