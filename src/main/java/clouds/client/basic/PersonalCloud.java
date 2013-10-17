@@ -2488,6 +2488,9 @@ public class PersonalCloud {
 			buf.append("<input type=\"hidden\" name=\"relayState\" value=\""
 					+ relayState + "\">");
 			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'");
+			buf.append(connectRequest);
+			buf.append("\'>");
 			buf.append("<input type=\"submit\" value=\"Approve!\"/>");
 			buf.append("<input type=\"submit\" value=\"Reject!\"/>");
 			buf.append("</form>");
