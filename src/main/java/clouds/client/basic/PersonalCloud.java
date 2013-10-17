@@ -2834,7 +2834,7 @@ public class PersonalCloud {
 		MessageResult result = this.delXDIStmts(null, XDI3Segment.create(targetSegment));
 		System.out.println("Result of delete lc :\n" + result.toString());
 		
-		return "";
+		return "<html><body>Deletion of LC was successful!</body></html>";
 	}
 
 }
