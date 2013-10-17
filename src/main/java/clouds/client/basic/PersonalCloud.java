@@ -2106,7 +2106,7 @@ public class PersonalCloud {
 			}
 			//address of meta link contract in ACME's cloud : {$to}[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9$from[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9+registration$do
 			/*
-			String meta_link_contract = "$to" + templateOwnerInumber + "{$from}" + templateOwnerInumber + "+registration$do";
+			String meta_link_contract = "{$to}" + templateOwnerInumber + "{$from}" + templateOwnerInumber + "+registration$do";
 			
 			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
 			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
@@ -2287,7 +2287,7 @@ public class PersonalCloud {
 			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
 			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
 			 */
-			String meta_link_contract = "$to" + templateOwnerInumber + "{$from}" + templateOwnerInumber + "+registration$do";
+			String meta_link_contract = "{$to}" + templateOwnerInumber + "{$from}" + templateOwnerInumber + "+registration$do";
 			
 			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
 			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
@@ -2471,7 +2471,7 @@ public class PersonalCloud {
 		
 		//send link contract to the relying party
 		//{$from}[@]!:uuid:1+registration$do
-		String lcAddress = "$to" + relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
+		String lcAddress = "{$to}" + relyingPartyCloudNumber + "{$from}" + relyingPartyCloudNumber + "+registration$do";		
 		PersonalCloud relyingPartyPC = PersonalCloud.open(XDI3Segment.create(relyingPartyCloudNumber), this.senderCloudNumber, XDI3Segment.create(lcAddress), "");
 		MessageResult setResponse2 = relyingPartyPC.setXDISegment(XDI3Segment.create(targetSegment));
 		System.out.println("Set response 2 : " + setResponse2);
