@@ -653,7 +653,7 @@ public class PersonalCloud {
 		return messageResult;
 	}
 
-	public MessageResult delXDIStmts(ArrayList<XDI3Statement> XDIStmts) {
+	public MessageResult delXDIStmts(ArrayList<XDI3Statement> XDIStmts , XDI3Segment target) {
 
 		// prepare XDI client
 
@@ -669,7 +669,13 @@ public class PersonalCloud {
 
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
-		message.createDelOperation(XDIStmts.iterator());
+		if(XDIStmts != null && XDIStmts.size() > 0){
+			message.createDelOperation(XDIStmts.iterator());
+		}
+		if(target != null && !target.toString().isEmpty()){
+			message.createDelOperation(target);
+		}
+		
 
 		// System.out.println("Message :\n" + messageEnvelope + "\n");
 		try {
@@ -2247,7 +2253,7 @@ public class PersonalCloud {
 			buf.append("\'>");
 
 			buf.append("</input>");
-			buf.append("Your Secret Token: <input type=\"text\" name=\"secrettoken\"/><br>");
+			buf.append("Your Secret Token: <input type=\"password\" name=\"secrettoken\"/><br>");
 			buf.append("<input type=\"submit\" value=\"Authenticate!\"/>");
 			buf.append("</form>");
 			buf.append("</div>");
@@ -2815,6 +2821,20 @@ public class PersonalCloud {
 		System.out.println("Result HTML : \n" + result);
 		return result;
 
+	}
+	public String processDisconnectRequest(String requestingParty, String respondingParty){
+		
+		String targetSegment = new String();
+		targetSegment += this.cloudNumber;
+		targetSegment += "$to";
+		targetSegment += requestingParty;
+		targetSegment += "$from";
+		targetSegment += requestingParty;
+		targetSegment += "+registration$do";
+		MessageResult result = this.delXDIStmts(null, XDI3Segment.create(targetSegment));
+		System.out.println("Result of delete lc :\n" + result.toString());
+		
+		return "";
 	}
 
 }
