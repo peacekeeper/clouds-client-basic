@@ -2104,21 +2104,33 @@ public class PersonalCloud {
 				System.out.println("No LC template address provided");
 				return result;
 			}
+			//address of meta link contract in ACME's cloud : {$to}[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9$from[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9+registration$do
+			/*
+			String meta_link_contract = "$to" + templateOwnerInumber + "{$from}" + templateOwnerInumber + "+registration$do";
+			
 			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
 			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
 			querySegments.add(XDI3Segment.create(templateOwnerInumber + "<+name>"));
-			querySegments.add(XDI3Segment.create(lcTemplateAddress));
+			
 			ArrayList<XDI3Statement> queryStmts = new ArrayList<XDI3Statement>();
 			queryStmts.add(XDI3Statement.create(templateOwnerInumber + "/$is$ref/{}"));
 			MessageResult responseFromRemoteCloud = remoteCloud.sendQueries(querySegments, queryStmts,false);
 
 			Graph responseGraph = responseFromRemoteCloud.getGraph();
 			ContextNode responseRootContext = responseGraph.getRootContextNode();
+			
+			querySegments = new ArrayList<XDI3Segment>();
+			querySegments.add(XDI3Segment.create(lcTemplateAddress));
+			remoteCloud.setLinkContractAddress(XDI3Segment.create(meta_link_contract));
+			MessageResult responseFromRemoteCloud2 = remoteCloud.sendQueries(querySegments, queryStmts,false);
+			Graph responseGraph2 = responseFromRemoteCloud2.getGraph();
+			ContextNode responseRootContext2 = responseGraph2.getRootContextNode();
+			
 			//get requested data fields
 			
 			ArrayList<XDI3Segment> getDataFields = new ArrayList<XDI3Segment>();
 			
-			ReadOnlyIterator<Relation> getRelations = responseRootContext.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			ReadOnlyIterator<Relation> getRelations = responseRootContext2.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
 			for(Relation r : getRelations){
 				if(r.getArcXri().toString().equals("$get")){
 					getDataFields.add(r.getTargetContextNodeXri());
@@ -2130,7 +2142,7 @@ public class PersonalCloud {
 			Literal requestingPartyNameLit = responseRootContext.getDeepLiteral(XDI3Segment.create(templateOwnerInumber + "<+name>&"));
 			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
 			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
-			
+			*/
 			//prepare secret token input HTML
 			
 			StringBuffer buf = new StringBuffer();
@@ -2248,7 +2260,7 @@ public class PersonalCloud {
 			if (lcTemplateAddress == null){
 				System.out.println("No LC template address provided");
 				return result;
-			}
+			}/*
 			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
 			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
 			querySegments.add(XDI3Segment.create(templateOwnerInumber + "<+name>"));
@@ -2274,6 +2286,44 @@ public class PersonalCloud {
 			Literal requestingPartyNameLit = responseRootContext.getDeepLiteral(XDI3Segment.create(templateOwnerInumber + "<+name>&"));
 			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
 			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
+			 */
+			String meta_link_contract = "$to" + templateOwnerInumber + "{$from}" + templateOwnerInumber + "+registration$do";
+			
+			PersonalCloud remoteCloud = PersonalCloud.open(XDI3Segment.create(templateOwnerInumber), this.cloudNumber, XDI3Segment.create("$public$do"), "");
+			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
+			querySegments.add(XDI3Segment.create(templateOwnerInumber + "<+name>"));
+			
+			ArrayList<XDI3Statement> queryStmts = new ArrayList<XDI3Statement>();
+			queryStmts.add(XDI3Statement.create(templateOwnerInumber + "/$is$ref/{}"));
+			MessageResult responseFromRemoteCloud = remoteCloud.sendQueries(querySegments, queryStmts,false);
+
+			Graph responseGraph = responseFromRemoteCloud.getGraph();
+			ContextNode responseRootContext = responseGraph.getRootContextNode();
+			
+			querySegments = new ArrayList<XDI3Segment>();
+			queryStmts = new ArrayList<XDI3Statement>();
+			querySegments.add(XDI3Segment.create(lcTemplateAddress));
+			remoteCloud.setLinkContractAddress(XDI3Segment.create(meta_link_contract));
+			MessageResult responseFromRemoteCloud2 = remoteCloud.sendQueries(querySegments, queryStmts,false);
+			Graph responseGraph2 = responseFromRemoteCloud2.getGraph();
+			ContextNode responseRootContext2 = responseGraph2.getRootContextNode();
+			
+			//get requested data fields
+			
+			ArrayList<XDI3Segment> getDataFields = new ArrayList<XDI3Segment>();
+			
+			ReadOnlyIterator<Relation> getRelations = responseRootContext2.getAllRelations() ; //g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for(Relation r : getRelations){
+				if(r.getArcXri().toString().equals("$get")){
+					getDataFields.add(r.getTargetContextNodeXri());
+					System.out.println(r.getTargetContextNodeXri());
+				}
+				
+			}
+			
+			Literal requestingPartyNameLit = responseRootContext.getDeepLiteral(XDI3Segment.create(templateOwnerInumber + "<+name>&"));
+			Relation requestingPartyCloudnameRel = responseRootContext.getDeepRelation(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$is$ref"));
+			String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel.getTargetContextNodeXri().toString();
 
 			querySegments = new ArrayList<XDI3Segment>();
 			queryStmts = new ArrayList<XDI3Statement>();
@@ -2285,9 +2335,9 @@ public class PersonalCloud {
 			}
 			MessageResult responseFromThisCloud = this.sendQueries(querySegments, queryStmts,false);
 
-			Graph responseGraph2 = responseFromThisCloud.getGraph();
-			ContextNode responseRootContext2 = responseGraph2.getRootContextNode();
-			ReadOnlyIterator<Literal> allLiteralsFromResponse = responseRootContext2.getAllLiterals();
+			Graph responseGraph3 = responseFromThisCloud.getGraph();
+			ContextNode responseRootContext3 = responseGraph3.getRootContextNode();
+			ReadOnlyIterator<Literal> allLiteralsFromResponse = responseRootContext3.getAllLiterals();
 			
 			//prepare authorization input HTML
 			
