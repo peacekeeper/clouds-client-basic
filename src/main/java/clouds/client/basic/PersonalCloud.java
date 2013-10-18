@@ -2580,6 +2580,7 @@ public class PersonalCloud {
 			System.out.println("Set statements :" + stmt);
 			setStatements.add(XDI3Statement.create(stmt));
 		}
+		System.out.println("All Set statements :" + setStatements);
 		MessageResult setResponse = this.setXDIStmts(setStatements);
 		System.out.println("Set response : " + setResponse);
 
