@@ -559,6 +559,7 @@ System.out.println("setXDIStmts 1");
 //		}
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
+		System.out.println("setXDIStmts 2.5");
 		if(XDIStmts != null && XDIStmts.size() > 0){
 		message.createSetOperation(XDIStmts.iterator());
 		}
