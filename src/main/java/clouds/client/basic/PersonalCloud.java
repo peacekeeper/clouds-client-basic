@@ -2602,7 +2602,7 @@ public class PersonalCloud {
 			if (requestingPartyCloudnameRel != null) {
 				String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel
 						.getTargetContextNodeXri().toString();
-				xdiResponseValues += requestingPartyCloudNumberCtx;
+				xdiResponseValues += this.cloudNumber + "/$is$ref/" + requestingPartyCloudNumberCtx;
 			}
 		}
 		StringBuffer buf = new StringBuffer();
@@ -2812,7 +2812,7 @@ public class PersonalCloud {
 				if (requestingPartyCloudnameRel != null) {
 					String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel
 							.getTargetContextNodeXri().toString();
-					xdiResponse += requestingPartyCloudNumberCtx + "\n";
+					xdiResponse += this.cloudNumber + "/$is$ref/" + requestingPartyCloudNumberCtx + "\n";
 				}
 			}
 			String targetSegment = new String();
