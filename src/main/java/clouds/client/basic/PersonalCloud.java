@@ -2556,7 +2556,7 @@ System.out.println("setXDIStmts 1");
 		policyStmt += relyingPartyCloudNumber;
 		policyStmt += "+registration$do$if$and/$true/({$from}/$is/"
 				+ relyingPartyCloudNumber + ")";
-		//setStatements.add(XDI3Statement.create(policyStmt));
+		setStatements.add(XDI3Statement.create(policyStmt));
 
 		policyStmt = new String();
 		policyStmt += respondingPartyCloudNumber;
@@ -2565,7 +2565,7 @@ System.out.println("setXDIStmts 1");
 		policyStmt += "$from";
 		policyStmt += relyingPartyCloudNumber;
 		policyStmt += "+registration$do$if$and/$true/({$msg}<$sig><$valid>&/&/true)";
-		//setStatements.add(XDI3Statement.create(policyStmt));
+		setStatements.add(XDI3Statement.create(policyStmt));
 
 		for (int i = 0; i < selectedValues.length; i++) {
 			String value = selectedValues[i];
