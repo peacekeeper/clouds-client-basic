@@ -2593,14 +2593,14 @@ public class PersonalCloud {
 
 		// send link contract to the relying party
 		// {$from}[@]!:uuid:1+registration$do
-		String lcAddress = "{$to}" + relyingPartyCloudNumber + "{$from}"
-				+ relyingPartyCloudNumber + "+registration$do";
-		PersonalCloud relyingPartyPC = PersonalCloud.open(
-				XDI3Segment.create(relyingPartyCloudNumber),
-				this.senderCloudNumber, XDI3Segment.create(lcAddress), "");
-		MessageResult setResponse2 = relyingPartyPC.setXDISegment(XDI3Segment
-				.create(targetSegment));
-		System.out.println("Set response 2 : " + setResponse2);
+//		String lcAddress = "{$to}" + relyingPartyCloudNumber + "{$from}"
+//				+ relyingPartyCloudNumber + "+registration$do";
+//		PersonalCloud relyingPartyPC = PersonalCloud.open(
+//				XDI3Segment.create(relyingPartyCloudNumber),
+//				this.senderCloudNumber, XDI3Segment.create(lcAddress), "");
+//		MessageResult setResponse2 = relyingPartyPC.setXDISegment(XDI3Segment
+//				.create(targetSegment));
+//		System.out.println("Set response 2 : " + setResponse2);
 
 		StringBuffer buf = new StringBuffer();
 		buf.append("<html><head></head><div id=\"approval_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
