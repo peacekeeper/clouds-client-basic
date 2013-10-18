@@ -2795,9 +2795,9 @@ System.out.println("setXDIStmts 1");
 		buf.append("function submitForm() { document.forms['connectResponse'].submit(); }");
 		buf.append("</SCRIPT>");
 		buf.append("<body onload=\"submitForm()\">");
-		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
-		buf.append("<p>New Link Contracts have been established successfully!");
-		buf.append("<p>");
+//		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
+//		buf.append("<p>New Link Contracts have been established successfully!");
+//		buf.append("<p>");
 		// for(int i = 0 ; i < selectedValues.length ; i++){
 		// buf.append(selectedValues[i] + "<br>");
 		// }
@@ -2822,7 +2822,7 @@ System.out.println("setXDIStmts 1");
 		buf.append("<input type=\"hidden\" name=\"statuscode\" value=\""
 				+ "@respect.network*connection.manager$success" + "\">");
 		buf.append("</input>");
-		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
+		buf.append("<input type=\"submit\" value=\"submit\" style=\"display: none;\" border=\"0\"/>");
 		buf.append("</form>");
 		buf.append("</div>");
 		buf.append("</body>");
@@ -2894,9 +2894,9 @@ System.out.println("setXDIStmts 1");
 		buf.append("function submitForm() { document.forms['connectResponseReject'].submit(); }");
 		buf.append("</SCRIPT>");
 		buf.append("<body onload=\"submitForm()\">");
-		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
-		buf.append("<p>Link Contract request has been cancelled by the user!");
-		buf.append("<p>");
+//		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
+//		buf.append("<p>Link Contract request has been cancelled by the user!");
+//		buf.append("<p>");
 		// for(int i = 0 ; i < selectedValues.length ; i++){
 		// buf.append(selectedValues[i] + "<br>");
 		// }
@@ -2914,7 +2914,7 @@ System.out.println("setXDIStmts 1");
 		buf.append("<input type=\"hidden\" name=\"statuscode\" value=\""
 				+ "@respect.network*connection.manager+user+canceled+request$error" + "\">");
 		buf.append("</input>");
-		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
+		buf.append("<input type=\"submit\" value=\"submit\" style=\"display: none;\" border=\"0\"/>");
 		buf.append("</form>");
 		buf.append("</div>");
 		buf.append("</body>");
