@@ -2546,7 +2546,7 @@ System.out.println("setXDIStmts 1");
 		isPlusstmt += "+registration$do/$is+/";
 		isPlusstmt += linkContractTemplateAddress;
 
-		//setStatements.add(XDI3Statement.create(isPlusstmt));
+		setStatements.add(XDI3Statement.create(isPlusstmt));
 
 		String policyStmt = new String();
 		policyStmt += respondingPartyCloudNumber;
