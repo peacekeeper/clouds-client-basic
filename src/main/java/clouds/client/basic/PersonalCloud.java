@@ -2805,6 +2805,7 @@ System.out.println("setXDIStmts 1");
 			
 			MessageResult responseFromThisCloud = this.sendQueries(
 					querySegments, null, false);
+			if(responseFromThisCloud != null){
 			Graph responseGraph3 = responseFromThisCloud.getGraph();
 			ContextNode responseRootContext3 = responseGraph3
 					.getRootContextNode();
@@ -2815,6 +2816,7 @@ System.out.println("setXDIStmts 1");
 			for (Literal lit : allLiteralsFromResponse) {
 				xdiResponse += lit.getContextNode().toString() + "/&/"
 						+ "\"" + lit.getLiteralDataString() + "\"\n";
+			}
 			}
 			String targetSegment = new String();
 			targetSegment += this.cloudNumber;
