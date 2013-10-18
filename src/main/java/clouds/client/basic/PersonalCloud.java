@@ -2382,8 +2382,10 @@ public class PersonalCloud {
 					.getAllRelations();
 			for (Relation r : getRelations) {
 				if (r.getArcXri().toString().equals("$get")) {
-					getDataFields.add(r.getTargetContextNodeXri());
-					System.out.println(r.getTargetContextNodeXri());
+					if (!r.getTargetContextNodeXri().toString().contains("/")) {
+						getDataFields.add(r.getTargetContextNodeXri());
+						System.out.println(r.getTargetContextNodeXri());
+					}
 				}
 
 			}
@@ -2602,7 +2604,8 @@ public class PersonalCloud {
 			if (requestingPartyCloudnameRel != null) {
 				String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel
 						.getTargetContextNodeXri().toString();
-				xdiResponseValues += this.cloudNumber + "/$is$ref/\"" + requestingPartyCloudNumberCtx + "\"";
+				xdiResponseValues += this.cloudNumber + "/$is$ref/\""
+						+ requestingPartyCloudNumberCtx + "\"";
 			}
 		}
 		StringBuffer buf = new StringBuffer();
@@ -2772,9 +2775,12 @@ public class PersonalCloud {
 			for (Relation r : getRelations) {
 				if (r.getArcXri().toString().equals("$get")) {
 					if (!r.getArcXri().toString().contains("$is$ref")) {
-						getDataFields.add(r.getTargetContextNodeXri());
-						System.out.println("AutoSubmit : req field : "
-								+ r.getTargetContextNodeXri());
+						if (!r.getTargetContextNodeXri().toString()
+								.contains("/")) {
+							getDataFields.add(r.getTargetContextNodeXri());
+							System.out.println("AutoSubmit : req field : "
+									+ r.getTargetContextNodeXri());
+						}
 					}
 				}
 
@@ -2812,7 +2818,8 @@ public class PersonalCloud {
 				if (requestingPartyCloudnameRel != null) {
 					String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel
 							.getTargetContextNodeXri().toString();
-					xdiResponse += this.cloudNumber + "/$is$ref/\"" + requestingPartyCloudNumberCtx + "\"\n";
+					xdiResponse += this.cloudNumber + "/$is$ref/\""
+							+ requestingPartyCloudNumberCtx + "\"\n";
 				}
 			}
 			String targetSegment = new String();
