@@ -45,6 +45,7 @@ public class PersonalCloud {
 
 	public static String DEFAULT_REGISTRY_URI = "http://mycloud.neustar.biz:12220/";
 	public static String WEBAPP_BASE_URI = "http://mycloud.neustar.biz:8080/myapp/personalclouds/";
+	//public static String WEBAPP_BASE_URI = "http://ACHOWDHU-LTW7.cis.neustar.com:8080/myapp/personalclouds/";
 	private String secretToken = null;
 	private XDI3Segment linkContractAddress = null;
 
@@ -2572,10 +2573,14 @@ System.out.println("setXDIStmts 1");
 		policyStmt += "+registration$do$if$and/$true/({$msg}<$sig><$valid>&/&/true)";
 		setStatements.add(XDI3Statement.create(policyStmt));
 
+		String xdiResponseValues = new String();
+		
 		for (int i = 0; i < selectedValues.length; i++) {
 			String value = selectedValues[i];
 			StringTokenizer st = new StringTokenizer(value, "|");
 			String addressPart = st.nextToken();
+			String valuePart = st.nextToken();
+			xdiResponseValues += addressPart + "/&/" + "\"" + valuePart + "\"" + "\n";
 			// strip the last & off
 			addressPart = addressPart.substring(0, addressPart.length() - 1);
 			String stmt = new String();
@@ -2602,6 +2607,7 @@ System.out.println("setXDIStmts 1");
 		targetSegment += relyingPartyCloudNumber;
 		targetSegment += "+registration$do";
 
+		xdiResponseValues += targetSegment + "/$is+/" + linkContractTemplateAddress + "\n";
 		// send link contract to the relying party
 		// {$from}[@]!:uuid:1+registration$do
 //		String lcAddress = "{$to}" + relyingPartyCloudNumber + "{$from}"
@@ -2619,9 +2625,9 @@ System.out.println("setXDIStmts 1");
 		buf.append("function submitForm() { document.forms['connectResponse'].submit(); }");
 		buf.append("</SCRIPT>");
 		buf.append("<body onload=\"submitForm()\">");
-		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
-		buf.append("<p>New Link Contracts have been established successfully!");
-		buf.append("<p>");
+//		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
+//		buf.append("<p>New Link Contracts have been established successfully!");
+//		buf.append("<p>");
 		// for(int i = 0 ; i < selectedValues.length ; i++){
 		// buf.append(selectedValues[i] + "<br>");
 		// }
@@ -2640,13 +2646,13 @@ System.out.println("setXDIStmts 1");
 				+ this.cloudEndpointURI + "\">");
 		buf.append("</input>");
 		buf.append("<input type=\"hidden\" name=\"xdiresponse\" value=\'"
-				+ targetSegment + "/$is+/" + linkContractTemplateAddress
+				+ xdiResponseValues
 				+ "\'>");
 		buf.append("</input>");
 		buf.append("<input type=\"hidden\" name=\"statuscode\" value=\""
 				+ "@respect.network*connection.manager$success" + "\">");
 		buf.append("</input>");
-		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
+		buf.append("<input type=\"submit\" value=\"submit\" style=\"display: none;\" border=\"0\"/>");
 		buf.append("</form>");
 		buf.append("</div>");
 		buf.append("</body>");
@@ -2657,6 +2663,7 @@ System.out.println("setXDIStmts 1");
 		return result;
 	}
 	public boolean linkContractExists(String connectRequest){
+		System.out.println("\nChecking if a link contract exists\n");
 		boolean result = false;
 		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
 		String templateOwnerInumber = null;
@@ -2721,6 +2728,7 @@ System.out.println("setXDIStmts 1");
 		Graph responseGraph = responseFromRemoteCloud.getGraph();
 		ContextNode responseRootContext = responseGraph
 				.getRootContextNode();
+		System.out.println("\n\nLink Contract exists check\n\n" + responseGraph.toString() );
 		if(responseRootContext.getContextNodeCount() > 1){
 			result = true;
 		}
@@ -2734,6 +2742,7 @@ System.out.println("setXDIStmts 1");
 		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
 		String templateOwnerInumber = null;
 		String lcTemplateAddress = null;
+		String xdiResponse = new String();
 		try {
 			Graph g = graphFactory.parseGraph(connectRequest);
 			// get remote cloud number
@@ -2771,19 +2780,59 @@ System.out.println("setXDIStmts 1");
 				System.out.println("No LC template address provided");
 				return result;
 			}
+			// get requested data fields
+
+			ArrayList<XDI3Segment> getDataFields = new ArrayList<XDI3Segment>();
+
+			ReadOnlyIterator<Relation> getRelations = c
+					.getAllRelations(); 
+			for (Relation r : getRelations) {
+				if (r.getArcXri().toString().equals("$get")) {
+					getDataFields.add(r.getTargetContextNodeXri());
+					System.out.println(r.getTargetContextNodeXri());
+				}
+
+			}
+
+			ArrayList<XDI3Segment> querySegments = new ArrayList<XDI3Segment>();
+			for (XDI3Segment dataField : getDataFields) {
+				String dataFieldStr = dataField.toString();
+				dataFieldStr = dataFieldStr.replace("{$to}",
+						this.cloudNumber.toString());
+
+				querySegments.add(XDI3Segment.create(dataFieldStr));
+			}
+			ArrayList<XDI3Statement> queryStmts = new ArrayList<XDI3Statement>();
+			MessageResult responseFromThisCloud = this.sendQueries(
+					querySegments, queryStmts, false);
+			Graph responseGraph3 = responseFromThisCloud.getGraph();
+			ContextNode responseRootContext3 = responseGraph3
+					.getRootContextNode();
+			ReadOnlyIterator<Literal> allLiteralsFromResponse = responseRootContext3
+					.getAllLiterals();
+
+			
+			for (Literal lit : allLiteralsFromResponse) {
+				xdiResponse += lit.getContextNode().toString() + "/&/"
+						+ "\"" + lit.getLiteralDataString() + "\"\n";
+			}
+			String targetSegment = new String();
+			targetSegment += this.cloudNumber;
+			targetSegment += "$to";
+			targetSegment += templateOwnerInumber;
+			targetSegment += "$from";
+			targetSegment += templateOwnerInumber;
+			targetSegment += "+registration$do";
+			
+			xdiResponse += targetSegment + "/$is+/" + lcTemplateAddress;
 		}catch(Exception io){
 			io.printStackTrace();
 			return result;
 		}
 
+
 		
-		String targetSegment = new String();
-		targetSegment += this.cloudNumber;
-		targetSegment += "$to";
-		targetSegment += templateOwnerInumber;
-		targetSegment += "$from";
-		targetSegment += templateOwnerInumber;
-		targetSegment += "+registration$do";
+		
 		
 //		String linkContractTemplateAddress = new String("{$from}");
 //		linkContractTemplateAddress += templateOwnerInumber;
@@ -2816,7 +2865,7 @@ System.out.println("setXDIStmts 1");
 				+ this.cloudEndpointURI + "\">");
 		buf.append("</input>");
 		buf.append("<input type=\"hidden\" name=\"xdiresponse\" value=\'"
-				+ targetSegment + "/$is+/" + lcTemplateAddress
+				+ xdiResponse
 				+ "\'>");
 		buf.append("</input>");
 		buf.append("<input type=\"hidden\" name=\"statuscode\" value=\""
