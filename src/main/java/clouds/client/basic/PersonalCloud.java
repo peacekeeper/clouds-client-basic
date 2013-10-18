@@ -2452,13 +2452,13 @@ System.out.println("setXDIStmts 1");
 			// prepare authorization input HTML
 
 			StringBuffer buf = new StringBuffer();
-			buf.append("<html><head></head><div id=\"authz_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
-			buf.append("<body>");
+			buf.append("<html><head>");
+			
 			buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
 			buf.append("function buttonClick(val){ document.getElementById('buttonClicked').value = val; return true; }");
-			buf.append("</SCRIPT>");
-
-			buf.append("<p>Link Contract Authorization Form</p>");
+			buf.append("</SCRIPT></head>");
+			buf.append("<body>");
+			buf.append("<div id=\"authz_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\"><p>Link Contract Authorization Form</p>");
 			buf.append("<p>");
 			buf.append(requestingPartyNameLit.getLiteralDataString()
 					+ "(Cloud Name: "
@@ -2507,8 +2507,8 @@ System.out.println("setXDIStmts 1");
 			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'");
 			buf.append(connectRequest);
 			buf.append("\'>");
-			buf.append("<input type=\"submit\" value=\"Approve!\" onclick=\"return handleClick('Approve')\" />");
-			buf.append("<input type=\"submit\" value=\"Reject!\" onclick=\"return handleClick('Reject')\" />");
+			buf.append("<input type=\"submit\" value=\"Approve!\" onclick=\"return buttonClick('Approve')\" />");
+			buf.append("<input type=\"submit\" value=\"Reject!\" onclick=\"return buttonClick('Reject')\" />");
 			buf.append("</form>");
 			buf.append("</div>");
 			buf.append("</body>");
