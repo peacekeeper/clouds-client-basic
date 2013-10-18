@@ -2802,9 +2802,9 @@ System.out.println("setXDIStmts 1");
 
 				querySegments.add(XDI3Segment.create(dataFieldStr));
 			}
-			ArrayList<XDI3Statement> queryStmts = new ArrayList<XDI3Statement>();
+			
 			MessageResult responseFromThisCloud = this.sendQueries(
-					querySegments, queryStmts, false);
+					querySegments, null, false);
 			Graph responseGraph3 = responseFromThisCloud.getGraph();
 			ContextNode responseRootContext3 = responseGraph3
 					.getRootContextNode();
