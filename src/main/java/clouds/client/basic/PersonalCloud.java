@@ -2454,6 +2454,10 @@ System.out.println("setXDIStmts 1");
 			StringBuffer buf = new StringBuffer();
 			buf.append("<html><head></head><div id=\"authz_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
 			buf.append("<body>");
+			buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
+			buf.append("function buttonClick(val){ document.getElementById('buttonClicked').value = val; return true; }");
+			buf.append("</SCRIPT>");
+
 			buf.append("<p>Link Contract Authorization Form</p>");
 			buf.append("<p>");
 			buf.append(requestingPartyNameLit.getLiteralDataString()
@@ -2477,6 +2481,7 @@ System.out.println("setXDIStmts 1");
 				str += "</input>";
 				buf.append(str);
 			}
+			buf.append("<input type=\"hidden\" name=\"buttonClicked\" id=\"buttonClicked\"  /> <br>");
 			buf.append("<input type=\"hidden\" name=\"authToken\" value=\"");
 			buf.append(authToken);
 			buf.append("\">");
@@ -2502,8 +2507,8 @@ System.out.println("setXDIStmts 1");
 			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'");
 			buf.append(connectRequest);
 			buf.append("\'>");
-			buf.append("<input type=\"submit\" value=\"Approve!\"/>");
-			buf.append("<input type=\"submit\" value=\"Reject!\"/>");
+			buf.append("<input type=\"submit\" value=\"Approve!\" onclick=\"return handleClick('Approve')\" />");
+			buf.append("<input type=\"submit\" value=\"Reject!\" onclick=\"return handleClick('Reject')\" />");
 			buf.append("</form>");
 			buf.append("</div>");
 			buf.append("</body>");
@@ -2828,6 +2833,99 @@ System.out.println("setXDIStmts 1");
 		return result;
 
 	}
+	public String autoSubmitRejectForm(String cloudname , String connectRequest, String failureurl , String relayState){
+		String result = new String("");
+		
+		
+		MemoryJSONGraphFactory graphFactory = new MemoryJSONGraphFactory();
+		String templateOwnerInumber = null;
+		String lcTemplateAddress = null;
+		try {
+			Graph g = graphFactory.parseGraph(connectRequest);
+			// get remote cloud number
+
+			XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(g,
+					System.out);
+			ContextNode c = g.getRootContextNode();
+			ReadOnlyIterator<ContextNode> allCNodes = c.getAllContextNodes();
+			for (ContextNode ci : allCNodes) {
+				if (ci.containsContextNode(XDI3SubSegment.create("[$msg]"))) {
+					templateOwnerInumber = ci.toString();
+					System.out.println(templateOwnerInumber);
+					break;
+				}
+			}
+			if (templateOwnerInumber == null) {
+				System.out
+						.println("No cloudnumber for requestor/template owner");
+				return result;
+			}
+			// get the address of the link contract template
+			// $set{$do}
+
+			
+
+			ReadOnlyIterator<Relation> allRelations = c.getAllRelations(); // g.getDeepRelations(XDI3Segment.create(templateOwnerInumber),XDI3Segment.create("$get"));
+			for (Relation r : allRelations) {
+				if (r.getArcXri().toString().equals("$set{$do}")) {
+					lcTemplateAddress = r.getTargetContextNodeXri().toString();
+					System.out.println(r.getTargetContextNodeXri());
+				}
+
+			}
+			if (lcTemplateAddress == null) {
+				System.out.println("No LC template address provided");
+				return result;
+			}
+		}catch(Exception io){
+			io.printStackTrace();
+			return result;
+		}
+
+		
+		
+//		String linkContractTemplateAddress = new String("{$from}");
+//		linkContractTemplateAddress += templateOwnerInumber;
+//		linkContractTemplateAddress += "+registration$do";
+				
+		StringBuffer buf = new StringBuffer();
+		buf.append("<html><head></head><div id=\"rejection_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
+		buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
+		buf.append("function submitForm() { document.forms['connectResponseReject'].submit(); }");
+		buf.append("</SCRIPT>");
+		buf.append("<body onload=\"submitForm()\">");
+		buf.append("<p>Hello <b>" + cloudname + "</b>. Welcome back!");
+		buf.append("<p>Link Contract request has been cancelled by the user!");
+		buf.append("<p>");
+		// for(int i = 0 ; i < selectedValues.length ; i++){
+		// buf.append(selectedValues[i] + "<br>");
+		// }
+		buf.append("<form action=\"" + failureurl
+				+ "\" method=\"post\" name=\"connectResponseReject\">");
+		buf.append("<input type=\"hidden\" name=\"cloudname\" value=\""
+				+ cloudname + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"relayState\" value=\""
+				+ relayState + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"cloudnumber\" value=\""
+				+ this.cloudNumber + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"hidden\" name=\"statuscode\" value=\""
+				+ "@respect.network*connection.manager+user+canceled+request$error" + "\">");
+		buf.append("</input>");
+		buf.append("<input type=\"submit\" value=\"submit\" border=\"0\"/>");
+		buf.append("</form>");
+		buf.append("</div>");
+		buf.append("</body>");
+		buf.append("</html>");
+
+		result = buf.toString();
+		System.out.println("Result HTML : \n" + result);
+		return result;
+
+	}
+
 	public String processDisconnectRequest(String requestingParty, String respondingParty){
 		
 		String targetSegment = new String();
