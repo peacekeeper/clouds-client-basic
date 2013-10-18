@@ -539,7 +539,7 @@ public class PersonalCloud {
 	public MessageResult setXDIStmts(ArrayList<XDI3Statement> XDIStmts) {
 
 		// prepare XDI client
-
+System.out.println("setXDIStmts 1");
 		XDIClient xdiClient = new XDIHttpClient(cloudEndpointURI);
 
 		// prepare message envelope
@@ -547,7 +547,7 @@ public class PersonalCloud {
 		MessageEnvelope messageEnvelope = new MessageEnvelope();
 		Message message = messageEnvelope.getMessage(cloudNumber, true);
 		message.setLinkContractXri(linkContractAddress);
-
+		System.out.println("setXDIStmts 2");
 		if(secretToken != null){
 			message.setSecretToken(secretToken);
 		}
@@ -559,7 +559,10 @@ public class PersonalCloud {
 //		}
 		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(cloudNumber)));
+		if(XDIStmts != null && XDIStmts.size() > 0){
 		message.createSetOperation(XDIStmts.iterator());
+		}
+		System.out.println("setXDIStmts 3");
 
 		// System.out.println("Message :\n" + messageEnvelope + "\n");
 		try {
@@ -577,6 +580,7 @@ public class PersonalCloud {
 		try {
 
 			messageResult = xdiClient.send(messageEnvelope, null);
+			System.out.println("setXDIStmts 4");
 			// System.out.println(messageResult);
 			try {
 				XDIWriterRegistry.forFormat("XDI DISPLAY", null).write(
