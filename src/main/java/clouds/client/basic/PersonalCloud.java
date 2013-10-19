@@ -2374,7 +2374,7 @@ public class PersonalCloud {
 			ContextNode responseRootContext = responseGraph
 					.getRootContextNode();
 
-			// get requested data fields
+			
 
 			ArrayList<XDI3Segment> getDataFields = new ArrayList<XDI3Segment>();
 
@@ -2382,10 +2382,10 @@ public class PersonalCloud {
 					.getAllRelations();
 			for (Relation r : getRelations) {
 				if (r.getArcXri().toString().equals("$get")) {
-					if (!r.getTargetContextNodeXri().toString().contains("/")) {
+					
 						getDataFields.add(r.getTargetContextNodeXri());
 						System.out.println(r.getTargetContextNodeXri());
-					}
+					
 				}
 
 			}
@@ -2604,8 +2604,8 @@ public class PersonalCloud {
 			if (requestingPartyCloudnameRel != null) {
 				String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel
 						.getTargetContextNodeXri().toString();
-				xdiResponseValues += this.cloudNumber + "/$is$ref/\""
-						+ requestingPartyCloudNumberCtx + "\"";
+				xdiResponseValues += this.cloudNumber + "/$is$ref/"
+						+ requestingPartyCloudNumberCtx + "";
 			}
 		}
 		StringBuffer buf = new StringBuffer();
@@ -2818,8 +2818,8 @@ public class PersonalCloud {
 				if (requestingPartyCloudnameRel != null) {
 					String requestingPartyCloudNumberCtx = requestingPartyCloudnameRel
 							.getTargetContextNodeXri().toString();
-					xdiResponse += this.cloudNumber + "/$is$ref/\""
-							+ requestingPartyCloudNumberCtx + "\"\n";
+					xdiResponse += this.cloudNumber + "/$is$ref/"
+							+ requestingPartyCloudNumberCtx + "\n";
 				}
 			}
 			String targetSegment = new String();
