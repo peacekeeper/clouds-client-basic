@@ -2226,7 +2226,7 @@ public class PersonalCloud {
 			// prepare secret token input HTML
 
 			StringBuffer buf = new StringBuffer();
-
+/*
 			buf.append("<html><head></head><div id=\"authn_form\" style=\"position: relative; top: 61px; left: 64px; z-index: 1000;display: block;\">");
 			buf.append("<body>");
 			buf.append("<p>Hello : ");
@@ -2270,6 +2270,40 @@ public class PersonalCloud {
 			buf.append("</form>");
 			buf.append("</div>");
 			buf.append("</body>");
+			buf.append("</html>");
+*/
+			buf.append("<html><head><title>Personal Cloud Login</title></head><body>");
+			buf.append("<div id='authn_form' style='position: relative; top: 61px; left: 64px; z-index: 1000;display: block; border:2px solid; border-radius:25px; width:400px;padding:10px; background-color:lightgrey;  margin:0 auto; '>");
+			buf.append("<div  style='border:2px solid; border-radius:25px;text-align:center; background-color:grey; color:white;' >Connection Manager - Login </div>");
+			buf.append("<p>Hello :<b> ");
+			buf.append(respondingPartyCloudName);
+			buf.append("</b>, welcome to your Connection Manager.</p>");
+			buf.append("<p>We need to check that you are you:</p>");
+			buf.append("<form action=\"" + WEBAPP_BASE_URI);
+			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
+			buf.append("/connect/authorize/\" method=\"post\">");
+			buf.append("<input type=\"hidden\" name=\"successurl\" value=\""
+					+ successurl + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\""
+					+ failureurl + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"cloudname\" value=\""
+					+ respondingPartyCloudName + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"relayState\" value=\""
+					+ relayState + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'");
+			buf.append(respectConnectRequest);
+			buf.append("\'>");
+			buf.append("</input>");
+			buf.append("Enter your password: <input type=\"password\" name=\"secrettoken\"/><br>");
+			buf.append(" <div style='text-align:center;position:relative;top:12px;'><input type=\"submit\" value=\"Login\"/>");
+			buf.append("&nbsp;&nbsp;<input type='button' value='Concel' ></div>");
+			buf.append("</form>");
+			buf.append("</body>");
+			buf.append("</div>");
 			buf.append("</html>");
 
 			result = buf.toString();
