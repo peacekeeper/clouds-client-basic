@@ -1,5 +1,12 @@
 package clouds.client.basic.example;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import xdi2.core.Graph;
@@ -20,7 +27,7 @@ public class Test {
 	public static void testSaveProfile(String name , String passwd, String email , String phone) {
 		// open my own personal cloud
 
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"");
+		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"","");
 
 		// store my profile info
 
@@ -34,7 +41,7 @@ public class Test {
 
 		// open my own personal cloud
 
-		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"");
+		PersonalCloud cloud = PersonalCloud.open(XDI3Segment.create(name), passwd, PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT,"","");
 
 		// store my profile info
 
@@ -62,7 +69,7 @@ public class Test {
 
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		// open someone else's personal cloud
 		 PersonalCloud pc_markus = PersonalCloud.open(
 		 XDI3Segment.create(name),pc1.getCloudNumber(),
@@ -75,7 +82,7 @@ public class Test {
 		
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		
 		 PCAttributeCollection todoList = new PCAttributeCollection("TODO");
 		 PCAttribute task1 = new PCAttribute("Task1",
@@ -101,7 +108,7 @@ public class Test {
 	public static void testAccessGranting(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 
 				ProfileInfo pc1Prof = new ProfileInfo();
 				 pc1Prof.setEmail("animesh.chowdhury@neustar.biz");
@@ -128,7 +135,7 @@ public class Test {
 		
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 
 				ProfileInfo pc1Prof = new ProfileInfo();
 				 pc1.removeAccess( null,XDI3Segment.create("=markus"));
@@ -138,7 +145,7 @@ public class Test {
 	public static void testSharedDataAccess() {
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=markus"), "markus",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		PersonalCloud pc2 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), pc1.getCloudNumber(),
 				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
@@ -150,13 +157,13 @@ public class Test {
 	public static void getAllCollections(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		ArrayList<PCAttributeCollection> allColls = pc1.geAllCollections();
 	}
 	public static void testPDSXOps(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		PDSXElementTemplate profileNameTemplate = new PDSXElementTemplate("myProfileName","Name", true, "text", "What is your name?");
 		PDSXElementTemplate profileEmailTemplate = new PDSXElementTemplate("myProfileEmail","Email", true, "text", "Your home email address");
 		PDSXEntity.addTemplate("Person",profileNameTemplate);
@@ -184,14 +191,14 @@ public class Test {
 	public static void testDefaultLCs(){
 		PersonalCloud pc1 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh3"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		pc1.createDefaultLinkContracts();
 		pc1.getWholeGraph();
 	}
 	public static void testRelationships(){
 		PersonalCloud pc_animesh = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh3"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		PersonalCloud pc_markus = PersonalCloud.open(
 				 XDI3Segment.create("=markus"),pc_animesh.getCloudNumber(),
 				 XDI3Segment.create("$public$do"), "");
@@ -216,7 +223,7 @@ public class Test {
 		pc_animesh.getWholeGraph();
 		PersonalCloud pc_markus2 = PersonalCloud.open(
 				 XDI3Segment.create("=markus"), "markus",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		
 		PersonalCloud pc_animesh2 = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh3"),pc_markus2.getCloudNumber(),
@@ -229,7 +236,7 @@ public class Test {
 	public static void testDeleteNode(){
 		PersonalCloud pc_animesh = PersonalCloud.open(
 				 XDI3Segment.create("=dev.animesh"), "animesh123",
-				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "");
+				 PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
 		pc_animesh.deleteNodeTree(XDI3Segment.create("[=]!:uuid:0c5525d0-2744-ecf4-0c55-25d02744ecf4+friend"));
 		pc_animesh.deleteNodeTree(XDI3Segment.create("[=]!:uuid:0c5525d0-2744-ecf4-0c55-25d02744ecf4+family"));
 		pc_animesh.deleteNodeTree(XDI3Segment.create("[=]!:uuid:0c5525d0-2744-ecf4-0c55-25d02744ecf4+coworker"));
@@ -244,10 +251,10 @@ public class Test {
 //		Test.testAccessRemoval();
 		//Test.testSharedDataAccess();
 		//Test.getAllCollections();
-		Test.testOnOtherPersonalCloudWithDiscovery("=dev.ako");
+		//Test.testOnOtherPersonalCloudWithDiscovery("=dev.ako");
 	//Test.testMyOwnPersonalCloud("=dev.ako", "ga3169723");
 		//Test.testSaveProfile("=dev.ako", "ga3169723", "ako@kynetx.com", "1234567890");
-		Test.testPDSXOps();
+		//Test.testPDSXOps();
 //		PersonalCloud pc_peer3 = PersonalCloud.open(
 //				 XDI3Segment.create("=dev.animesh3"),XDI3Segment.create("[=]!:uuid:91f28153-f600-ae24-91f2-8153f600ae24"),
 //				 XDI3Segment.create("$public$do"), "");
@@ -283,6 +290,36 @@ public class Test {
 //		
 //		
 //		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
+		//PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
+		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"),"demo2",XDI3Segment.create("$do"),"");
+		//pc.getDataBucket("work");
+		String respectConnectRequest = new String();
 		
+		FileInputStream fin = null;
+		try {
+			fin = new FileInputStream(args[0]);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DataInputStream din  = new DataInputStream(fin);
+	     BufferedReader d
+         = new BufferedReader(new InputStreamReader(din));
+
+		try {
+			String line ;
+			while((line = d.readLine()) != null){
+				respectConnectRequest += line;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String [] checkedValues = new String[1];
+		checkedValues[0] = new String("[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610<+email>&|demo2@newdemoland.com");
+		pc.processApprovalForm("{$from}[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9+registration$do", "[@]!:uuid:e0178407-b7b6-43f9-e017-8407b7b643f9", "[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610", "demo2", checkedValues,"http://success","http://failure","=demo2","relayMe") ;
+		//pc.showAuthenticationForm(respectConnectRequest, "=demo2","[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610");
+		//pc.showApprovalForm(respectConnectRequest, "[=]!:uuid:678ac1a4-4b52-7610-678a-c1a44b527610", "demo2","http://success","http://failure","=demo2","relayMe");
+		//pc.linkContractExists(respectConnectRequest);
 	}
 }
