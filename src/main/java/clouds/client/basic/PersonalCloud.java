@@ -2456,6 +2456,7 @@ public class PersonalCloud {
 			// prepare authorization input HTML
 
 			StringBuffer buf = new StringBuffer();
+			/*
 			buf.append("<html><head>");
 
 			buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
@@ -2514,6 +2515,221 @@ public class PersonalCloud {
 			buf.append("<input type=\"submit\" value=\"Approve!\" onclick=\"return buttonClick('Approve')\" />");
 			buf.append("<input type=\"submit\" value=\"Reject!\" onclick=\"return buttonClick('Reject')\" />");
 			buf.append("</form>");
+			buf.append("</div>");
+			buf.append("</body>");
+			buf.append("</html>");
+*/
+			buf.append("<html><head>");
+
+			buf.append("<SCRIPT LANGUAGE=\"JavaScript\">");
+			buf.append("function buttonClick(val){ document.getElementById('buttonClicked').value = val; return true; }");
+			buf.append("</SCRIPT></head>");
+			buf.append("<body>");
+			
+			// start the outer div
+			buf.append("<div id=\"authz_form\" style='position: relative; top: 61px; z-index: 1000;display: block; border:2px solid; border-radius:25px; width:600px;height:382px;padding:10px; background-color:lightgrey;  margin:0 auto; overflow: hidden;'>");
+			buf.append("<div  style='border:2px solid; border-radius:25px 25px 0px 0px ;text-align:center; background-color:grey; color:white;' >Connection Manager - Authorization </div>");
+			
+			// *start the white inner box
+			buf.append("<div style='background-color:white;position:relative;top:10px;padding:10px;overflow: hidden;height:325px;border-radius: 0px 0px 25px 25px;'>");
+			
+			//**start the requester corner
+			buf.append("<div style='position: relative;top: 20px;left: 10px;height: 70px;width: 285px;' >");
+			
+			// fake the requesting corner 
+			if(requestingPartyCloudNumberCtx.equalsIgnoreCase("@acmebread"))
+			{
+				
+				buf.append("<div style='position: relative;top: 20px;left: 10px;height: 70px;width: 285px;' >");
+				buf.append("<img src='http://acme.respectnetwork.net/acmedemo/acme-logo.png' alt='' />	<br />");
+				buf.append("<div style='text-align: right;width: 240px;'> Member since: <b>March 2013</b> </div>");
+				
+			} else
+			{
+				buf.append(requestingPartyNameLit.getLiteralDataString()
+						+ "(Cloud Name: "
+						+ requestingPartyCloudNumberCtx
+						+ ") is offering to connect to your Cloud via Respect Connect.");
+				
+			}
+			
+			buf.append("</div>	");
+			//**end the requester corner
+
+			//**start the reputation corner
+			
+			// put in the top right 'reputation' area
+			buf.append("<div name='reputationBlock'  style='position:relative; top:-37px;left:330px'>");
+			buf.append("<div style='position:relative; top:0px;left:0px' >");
+			buf.append("<div style='position:relative; top:0px;left:0px;color:#336699;font-size:14pt; font-weight:bold;text-align:center;width:131px;' >Respect</div>");
+			buf.append("<div style='position:relative; top:0px;left:0px;color:#ff6633;font-size:14pt; font-weight:bold;text-align:center;width:131px;'>Connections</div>");
+			buf.append("</div>");
+			buf.append("<div style='position:relative; top:-45px;left:133px;font-size:14pt; font-weight:bold;text-align:center;height:40px;width:75px;border:3px solid; border-radius:25px;vertical-align: middle;display:table-cell;'>304</div>");
+			buf.append("</div>");
+			//**end the reputation corner
+			
+			
+			// start the form
+			buf.append("<form action=\"" + WEBAPP_BASE_URI);
+			buf.append(URLEncoder.encode(respondingPartyCloudNumber, "UTF-8"));
+			buf.append("/connect/approve/\" method=\"post\">");
+			
+			
+			// start bottom left authZ form 
+			
+			buf.append("<div name='dataAuth' style='border:0px solid;position:relative;top:-30px;left:15px;width:300px'>");
+			buf.append("<div>Personal data requested: </div>");
+			
+			//start data list
+			buf.append(" <div style='border:0px solid;position:relative;top:10px;left:10px;width:250px'>");
+			
+			buf.append("<table>");
+			buf.append("<tr>");
+			
+			buf.append("<td>");
+			
+			buf.append("Display Name:");
+			
+			buf.append("</td>");
+			buf.append("<td>");
+			
+			buf.append("<select>");
+			buf.append("<option value='");
+			
+			
+		        String val="";
+		        String name="";
+		        String str = new String("<input type=\"checkbox\" name=\"");
+
+			for (Literal lit : allLiteralsFromResponse) {
+				
+				str += "fieldchoices" + "\"";
+				str += " value=\'";
+				
+				str += lit.getContextNode().toString() + "|"
+						+ lit.getLiteralDataString();
+				str += "\'>";
+				str += lit.getLiteralDataString();
+				str += "</input>";
+				
+				name = lit.getLiteralDataString();
+				val = lit.getContextNode().toString() + "|"+ lit.getLiteralDataString();
+				
+				//buf.append("<div style='display:none' >");
+				
+				//buf.append("</div>");
+			}
+			
+
+			
+			buf.append(val+"'>");
+					
+					
+					
+			buf.append(name+"</option>");
+			
+			buf.append("</select>");
+			buf.append("</td>");
+			
+			buf.append("</tr>");
+			buf.append("<tr>");
+			
+			buf.append("<td>");
+			
+			buf.append("Email:"); 
+			buf.append("</td>");
+			buf.append("<td>");    
+			buf.append("<select>");
+			buf.append("<option value='volvo'>email@domain.com</option>");
+			buf.append("<option value='saab'>myname@gmail.com</option>");
+			buf.append("<option value='mercedes'>something@yahoo.com</option>");
+			buf.append("</select>");
+			
+			
+			buf.append("</td>");
+			buf.append("</tr>");
+			buf.append("<tr>");
+			
+			buf.append("<td>");
+			buf.append("Zip Code:"); 
+			buf.append("</td>");
+			buf.append("<td>");
+			buf.append("<select>");
+			buf.append("<option value='volvo'>95120</option>");
+			buf.append("<option value='saab'>94702</option>");
+			buf.append("</select>");
+			
+			buf.append("</td>");
+			buf.append("</tr>");
+			
+			buf.append("</table>");
+			buf.append(str);
+			//end data list
+			buf.append("<div>");
+			
+			buf.append("<input type=\"hidden\" name=\"buttonClicked\" id=\"buttonClicked\"  /> <br>");
+			buf.append("<input type=\"hidden\" name=\"authToken\" value=\"");
+			buf.append(authToken);
+			buf.append("\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"linkContractTemplateAddress\" value=\'");
+			buf.append(lcTemplateAddress);
+			buf.append("\'>");
+			buf.append("<input type=\"hidden\" name=\"relyingPartyCloudNumber\" value=\'");
+			buf.append(templateOwnerInumber);
+			buf.append("\'>");
+			buf.append("<input type=\"hidden\" name=\"successurl\" value=\""
+					+ successurl + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"failureurl\" value=\""
+					+ failureurl + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"cloudname\" value=\""
+					+ cloudname + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"relayState\" value=\""
+					+ relayState + "\">");
+			buf.append("</input>");
+			buf.append("<input type=\"hidden\" name=\"connectRequest\" value=\'");
+			buf.append(connectRequest);
+			buf.append("\'>");
+			
+			// end bottom left authZ form
+			buf.append("</div >");
+		
+			//start right permisions form
+			buf.append("<div style='border:0px solid;position:relative;top:-140px;left:283px;width:250px'>");
+			
+			buf.append("Permissions requested:<br>");
+			
+			buf.append("<div style='padding:6px'>");
+			buf.append("<div style='padding:3px'>");
+			buf.append("<input type='checkbox'> Send daily news summary");
+			buf.append("</div>");
+			buf.append("<div style='padding:3px'>");
+			buf.append("<input type='checkbox'> Send weekly news summary");
+			
+			buf.append("</div>");
+			buf.append("</div>");
+			//end right permisions form
+			buf.append("</div>");
+			
+			//start bottom bottom button bar
+			buf.append("<div style='text-align:center;width:500px; position:relative;top:-75px;'>");
+						
+			buf.append("<input type=\"submit\" value=\"Approve!\" onclick=\"return buttonClick('Approve')\" />");
+			buf.append("<input type=\"submit\" value=\"Reject!\" onclick=\"return buttonClick('Reject')\" />");
+			
+			//end bottom bottom button bar
+			buf.append("</div>");
+			
+			
+			buf.append("</form>");
+			
+			// start the inner white div
+			buf.append("</div>");
+			
+			// end the outer div
 			buf.append("</div>");
 			buf.append("</body>");
 			buf.append("</html>");
