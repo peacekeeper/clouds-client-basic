@@ -136,6 +136,9 @@ public class PersonalCloud {
 		// } else {
 		// pc.sessionId = session;
 		// }
+		if(pc.getWholeGraph() == null){
+			return null;
+		}
 		return pc;
 	}
 
@@ -2534,13 +2537,13 @@ public class PersonalCloud {
 			buf.append("<div style='background-color:white;position:relative;top:10px;padding:10px;overflow: hidden;height:325px;border-radius: 0px 0px 25px 25px;'>");
 			
 			//**start the requester corner
-			buf.append("<div style='position: relative;top: 20px;left: 10px;height: 70px;width: 285px;' >");
+			buf.append("<div style='position: relative;top: 15px;left: 10px;height: 70px;width: 285px;' >");
 			
 			// fake the requesting corner 
 			if(requestingPartyCloudNumberCtx.equalsIgnoreCase("@acmebread"))
 			{
 				
-				buf.append("<div style='position: relative;top: 20px;left: 10px;height: 70px;width: 285px;' >");
+				buf.append("<div style='position: relative;top: -10px;left: 10px;height: 70px;width: 285px;' >");
 				buf.append("<img src='http://acme.respectnetwork.net/acmedemo/acme-logo.png' alt='' />	<br />");
 				buf.append("<div style='text-align: right;width: 240px;'> Member since: <b>March 2013</b> </div>");
 				
@@ -2559,7 +2562,7 @@ public class PersonalCloud {
 			//**start the reputation corner
 			
 			// put in the top right 'reputation' area
-			buf.append("<div name='reputationBlock'  style='position:relative; top:-37px;left:330px'>");
+			buf.append("<div name='reputationBlock'  style='position:relative; top:-64px;left:330px'>");
 			buf.append("<div style='position:relative; top:0px;left:0px' >");
 			buf.append("<div style='position:relative; top:0px;left:0px;color:#336699;font-size:14pt; font-weight:bold;text-align:center;width:131px;' >Respect</div>");
 			buf.append("<div style='position:relative; top:0px;left:0px;color:#ff6633;font-size:14pt; font-weight:bold;text-align:center;width:131px;'>Connections</div>");
@@ -2577,7 +2580,7 @@ public class PersonalCloud {
 			
 			// start bottom left authZ form 
 			
-			buf.append("<div name='dataAuth' style='border:0px solid;position:relative;top:-30px;left:15px;width:300px'>");
+			buf.append("<div name='dataAuth' style='border:0px solid;position:relative;top:-75px;left:15px;width:300px'>");
 			buf.append("<div>Personal data requested: </div>");
 			
 			//start data list
@@ -2593,34 +2596,27 @@ public class PersonalCloud {
 			buf.append("</td>");
 			buf.append("<td>");
 			
-			buf.append("<select>");
-			buf.append("<option value='");
 			
 			
 		        String val="";
 		        String name="";
-		        String str = new String("<input type=\"checkbox\" name=\"");
-
-			for (Literal lit : allLiteralsFromResponse) {
-				
-				str += "fieldchoices" + "\"";
-				str += " value=\'";
-				
-				str += lit.getContextNode().toString() + "|"
-						+ lit.getLiteralDataString();
-				str += "\'>";
-				str += lit.getLiteralDataString();
-				str += "</input>";
-				
-				name = lit.getLiteralDataString();
-				val = lit.getContextNode().toString() + "|"+ lit.getLiteralDataString();
-				
-				//buf.append("<div style='display:none' >");
-				
-				//buf.append("</div>");
-			}
+		       
+		        for (Literal lit : allLiteralsFromResponse) {
+                    String str = new String("<input type=\"checkbox\" name=\"")
+                                    + "fieldchoices" + "\"";
+                    str += " value=\'";
+                    // str += URLEncoder.encode(lit.getLiteralDataString(),"UTF-8");
+                    str += lit.getContextNode().toString() + "|"
+                                    + lit.getLiteralDataString();
+                    str += "\'>";
+                    str += lit.getLiteralDataString();
+                    str += "</input>";
+                   // buf.append(str);
+            }
 			
-
+			buf.append("<select>");
+			buf.append("<option value='");
+		
 			
 			buf.append(val+"'>");
 					
@@ -2663,7 +2659,7 @@ public class PersonalCloud {
 			buf.append("</tr>");
 			
 			buf.append("</table>");
-			buf.append(str);
+			
 			//end data list
 			buf.append("<div>");
 			
