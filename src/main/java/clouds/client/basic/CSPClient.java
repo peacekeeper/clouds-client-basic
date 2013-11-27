@@ -77,7 +77,7 @@ public  class CSPClient {
 
 		Message message = messageEnvelope.getMessage(csp.getCSPCloudNumber(),
 				true);
-		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+		message.setToAuthority(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(RESPECT_NETWORK_CLOUD_NUMBER)));
 		message.setLinkContractXri(XDI3Segment.create("+registrar$do"));
 		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
@@ -127,7 +127,7 @@ public  class CSPClient {
 
 		Message message = messageEnvelope.getMessage(csp.getCSPCloudNumber(),
 				true);
-		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+		message.setToAuthority(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(RESPECT_NETWORK_CLOUD_NUMBER)));
 		message.setLinkContractXri(XDI3Segment.create("+registrar$do"));
 		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
@@ -169,7 +169,7 @@ public  class CSPClient {
 
 		Message message = messageEnvelope.getMessage(csp.getCSPCloudNumber(),
 				true);
-		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+		message.setToAuthority(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(csp.getCSPCloudNumber())));
 		message.setLinkContractXri(XDI3Segment.create("$do"));
 		message.getContextNode().setDeepLiteral(XDI3Segment.create("" + XDIAuthenticationConstants.XRI_S_SECRET_TOKEN + XDIConstants.XRI_S_VALUE), csp.getCSPSecretToken());
@@ -209,7 +209,7 @@ public  class CSPClient {
 
 		Message message = messageEnvelope.getMessage(csp.getCSPCloudNumber(),
 				true);
-		message.setToAddress(XDI3Segment.fromComponent(XdiPeerRoot
+		message.setToAuthority(XDI3Segment.fromComponent(XdiPeerRoot
 				.createPeerRootArcXri(RESPECT_NETWORK_CLOUD_NUMBER)));
 		message.setLinkContractXri(XDI3Segment.create("+registrar$do"));
 		

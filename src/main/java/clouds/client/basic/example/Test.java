@@ -291,7 +291,7 @@ public class Test {
 //		
 //		pc_animesh2.approveAccess(XDI3Segment.create(reqURI),null);
 		//PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"), "demo2", PersonalCloud.XRI_S_DEFAULT_LINKCONTRACT, "","");
-		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"),"demo2",XDI3Segment.create("$do"),"");
+		PersonalCloud pc = PersonalCloud.open(XDI3Segment.create("=demo2"),"demo3",XDI3Segment.create("$do"),"");
 		//pc.getDataBucket("work");
 		String respectConnectRequest = new String();
 		
